@@ -1,0 +1,83 @@
+*, *::before,
+*::after {
+    box-sizing: border-box;
+}
+:root {
+    --page-background: #FAF7F2;
+    --card-background: #FFFFFF;
+    --card-border: #E8E2D6;
+    --main-text: #1F2A24;
+    --muted-text: #6B6F66;
+    --brand-green: #1F7A4D;
+    --overdue-text: #B8431F;
+    --overdue-background: #F8E3DC;
+    --paid-text: #14532D;
+    --paid-background: #DDEFE4;
+    --unpaid-text: #4A4F47;
+    --unpaid-background: #EEEBE3;
+
+    --tiny-gap: 8px;
+    --big-gap: 16px;
+    --soft-rounded-corner: 12px;
+}
+body {
+    font-family: 'DM Sans', sans-serif;
+    background-color: var(--page-background);
+    color: var(--main-text);
+    line-height: 1.5;
+    margin: 0;
+}
+h1, h2{
+    margin: 0;
+    font-weight: 500;
+
+}
+
+
+header {
+    padding: var(--big-gap);
+    background-color: var(--card-background);
+    border-bottom: 1px solid var(--card-border);
+}
+h1{
+    font-size: 1.25rem;
+}
+.tagline{
+    color: var(--muted-text);
+    font-size: 0.875rem;
+    margin: 0;
+}
+#hostelName{
+    font-weight: 500;
+    color: var(--brand-green);
+    margin: var(--tiny-gap) 0 0;
+}
+nav {
+    display: flex;
+    background-color: var(--card-background);
+    border-top: 1px solid var(--card-border);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    
+ }
+nav button{
+    flex: 1;
+    padding: var(--big-gap) 0;
+    font: inherit;
+    color: var(--muted-text);
+    cursor: pointer;
+    border: 0;
+    background: none;
+}
+main {
+    padding: var(--big-gap);
+   padding-bottom: 88px; /* To account for the fixed nav bar */
+}
+.screen{
+    display: none;
+}
+.screen-active{
+    display: block;
+}

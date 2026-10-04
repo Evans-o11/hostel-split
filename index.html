@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hostel Split</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>
+            Hostel Split
+        </h1>
+        <p>Your simple solution for splitting hostel bills</p>
+
+        <p id="hostelName" class="tagline">Your hostel name</p>
+    </header>
+       
+    <main>
+        <section id="screenWelcome" class="screen">
+            <h2>Set up your hostel</h2>
+
+        </section>
+
+        <section id="screenHome" class="screen screen-active" >
+
+            <h2>Home</h2>
+        </section>
+
+        <section id="screenBills" class="screen ">
+
+            <h2>Bills</h2>
+        </section>
+
+        <section id="screenRoommates" class="screen">
+
+            <h2>Roommates</h2>
+        </section>
+
+        <section id="screenOverdue" class="screen">
+
+            <h2>Overdue bills</h2>
+        </section>
+
+    </main>
+    <nav aria-label="Main">
+        <button type="button" data-screen="Home">Home</button>
+        <button type="button" data-screen="Bills">Bills</button>
+        <button type="button" data-screen="Roommates">Roommates</button>
+        <button type="button" data-screen="Overdue">Overdue Bills</button>
+    </nav>
+
+
+
+    <script src="script.js"></script>
+</body>
+</html>

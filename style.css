@@ -25,7 +25,14 @@ body {
     background-color: var(--page-background);
     color: var(--main-text);
     line-height: 1.5;
-    margin: 0;
+    margin: 0 auto;
+    max-width: 480px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    
+    
 }
 h1, h2{
     margin: 0;
@@ -56,10 +63,8 @@ nav {
     display: flex;
     background-color: var(--card-background);
     border-top: 1px solid var(--card-border);
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+   position: sticky;
+   bottom: 0;
     
  }
 nav button{
@@ -73,11 +78,88 @@ nav button{
 }
 main {
     padding: var(--big-gap);
-   padding-bottom: 88px; /* To account for the fixed nav bar */
+ flex: 1;
 }
 .screen{
     display: none;
 }
 .screen-active{
     display: block;
+}
+
+nav button.active{
+    color: var(--brand-green);
+    font-weight: 500;
+    box-shadow: inset 0 3px 0 0 var(--brand-green);
+}
+.stat-row{
+    display: grid;
+    grid-template-columns:  repeat(3, 1fr);
+    gap: var(--tiny-gap);
+    margin-top: var(--big-gap);
+    
+}
+
+.stat-card{
+    background-color: var(--card-background);
+    border: 1px solid var(--card-border);
+    padding: 12px;
+    border-radius: var(--soft-rounded-corner);
+}
+.stat-label{
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--muted-text);
+}
+ .stat-value{
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+
+ }
+ #statCollected{
+    color: var(--brand-green);
+ }
+ #statOverdue{
+    color: var(--overdue-text);
+ }
+ .section-label{
+    margin-top: var(--big-gap);
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: var(--tiny-gap);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--muted-text);
+ }
+ .bill-card{
+    background-color: var(--card-background);
+    border: 1px solid var(--card-border);
+    padding: var(--big-gap);
+    border-radius: var(--soft-rounded-corner);
+ }
+ .bill-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+ }
+ .bill-title,.bill-amount{
+    margin: 0;
+    font-weight: 500;
+ }
+.progress{
+    height: 8px;
+    background-color: var(--unpaid-background);
+    border-radius: 999px;
+    overflow: hidden;
+    margin: var(--tiny-gap) 0;
+}
+.progress-fill{
+    height: 100%;
+    background-color: var(--brand-green);
+}
+.bill-note {
+    margin: var(--tiny-gap) 0 0;
+    font-size: 0.875rem;
+    color: var(--muted-text);
 }

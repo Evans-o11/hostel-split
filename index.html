@@ -1,60 +1,83 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hostel Split</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <header>
-        <h1>
-            Hostel Split
-        </h1>
-        <p>Your simple solution for splitting hostel bills</p>
+      <h1>Hostel Split</h1>
+      <p class="tagline">Your simple solution for splitting hostel bills</p>
 
-        <p id="hostelName" class="tagline">Your hostel name</p>
+      <p id="hostelName">Your hostel name</p>
     </header>
-       
+
     <main>
-        <section id="screenWelcome" class="screen">
-            <h2>Set up your hostel</h2>
+      <section id="screenWelcome" class="screen">
+        <h2>Set up your hostel</h2>
+      </section>
 
-        </section>
+      <section id="screenHome" class="screen screen-active">
+        <h2>Home</h2>
 
-        <section id="screenHome" class="screen screen-active" >
+        <div class="stat-row">
+          <div class="stat-card">
+            <p class="stat-label">Collected</p>
+            <p class="stat-value" id="statCollected">₦150,000</p>
+          </div>
 
-            <h2>Home</h2>
-        </section>
+          <div class="stat-card">
+            <p class="stat-label">Outstanding</p>
+            <p class="stat-value" id="statOutstanding">₦210,000</p>
+          </div>
 
-        <section id="screenBills" class="screen ">
+          <div class="stat-card">
+            <p class="stat-label">Overdue</p>
+            <p class="stat-value" id="statOverdue">₦60,000</p>
+          </div>
+        </div>
+        <p class="section-label">Current bill</p>
 
-            <h2>Bills</h2>
-        </section>
+        <div class="bill-card">
+          <div class="bill-top">
+            <p class="bill-title">Light bill, October</p>
+            <p class="bill-amount">₦60,000</p>
+          </div>
+          <p class="bill-note">Due 15 Oct, ₦5,000 each</p>
+          <div class="progress">
+            <div class="progress-fill" style="width: 58%"></div>
+          </div>
+          <p class="bill-note">7 of 12 paid</p>
+        </div>
+      </section>
 
-        <section id="screenRoommates" class="screen">
+      <section id="screenBills" class="screen">
+        <h2>Bills</h2>
+      </section>
 
-            <h2>Roommates</h2>
-        </section>
+      <section id="screenRoommates" class="screen">
+        <h2>Roommates</h2>
+      </section>
 
-        <section id="screenOverdue" class="screen">
-
-            <h2>Overdue bills</h2>
-        </section>
-
+      <section id="screenOverdue" class="screen">
+        <h2>Overdue bills</h2>
+      </section>
     </main>
     <nav aria-label="Main">
-        <button type="button" data-screen="Home">Home</button>
-        <button type="button" data-screen="Bills">Bills</button>
-        <button type="button" data-screen="Roommates">Roommates</button>
-        <button type="button" data-screen="Overdue">Overdue Bills</button>
+      <button type="button" data-screen="Home" class="active">Home</button>
+      <button type="button" data-screen="Bills">Bills</button>
+      <button type="button" data-screen="Roommates">Roommates</button>
+      <button type="button" data-screen="Overdue">Overdue Bills</button>
     </nav>
 
-
-
     <script src="script.js"></script>
-</body>
+  </body>
 </html>

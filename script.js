@@ -13,6 +13,11 @@ function showScreen(name) {
     screen.classList.remove("screen-active");
   });
     const shownScreen = document.getElementById("screen" + name);
-      shownScreen.classList.add("screen-active");
+  shownScreen.classList.add("screen-active");
+  buttons.forEach(function (button) {
+    button.dataset.screen === name ? button.classList.add("active") : button.classList.remove("active");
+
     
-} 
+  });
+    
+}

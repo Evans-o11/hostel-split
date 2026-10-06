@@ -163,3 +163,40 @@ nav button.active{
     font-size: 0.875rem;
     color: var(--muted-text);
 }
+.person-list {
+    background-color: var(--card-background);
+    border: 1px solid var(--card-border);
+    border-radius: var(--soft-rounded-corner);
+    padding: 0;
+}
+.person-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px var(--big-gap);
+    border-bottom: 1px solid var(--card-border);
+}
+.person-name{
+    margin: 0;
+}
+.status {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 999px;
+}
+.status-paid {
+    color: var(--paid-text);
+    background-color: var(--paid-background);
+}
+.status-unpaid {
+    color: var(--unpaid-text);
+    background-color: var(--unpaid-background);
+}
+.status-overdue {
+    color: var(--overdue-text);
+    background-color: var(--overdue-background);
+}
+.person-row:last-child {
+    border-bottom: 0;
+}

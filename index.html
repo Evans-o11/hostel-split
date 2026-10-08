@@ -143,6 +143,21 @@
       <button type="button" data-screen="Overdue">Overdue Bills</button>
     </nav>
 
+<dialog id="cancelDialog" class="dialog">
+<h3 class="dialog-title">
+  Cancel this bill?</h3>
+  <p id="cancelBillName" class="dialog-text"></p>
+  <div class="field">
+<label for="cancelReason">Reason (required)</label>
+<textarea name="cancelReason" id="cancelReason" rows="3" placeholder="e.g. Entered the wrong amount"></textarea>
+  </div>
+  <p id="cancelMessage" class="form-message"></p>
+  <div class="dialog-actions">
+<button type="button" id="keepButton" class="secondary-button">Keep bill</button>
+<button type="button" id="confirmCancelButton" class="danger-button">Cancel bill</button>
+  </div>
+</dialog>
+
     <div id="toast" class="toast">
   <span class="toast-icon">✓</span>
   <div>

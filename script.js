@@ -26,13 +26,25 @@ function saveBills() {
   localStorage.setItem("hostelBills", JSON.stringify(bills));
 }
 
-function deleteBill(id) {
-  bills = bills.filter(function (bill) {
-    return bill.id !== id;
-  });
-  saveBills();
-  renderBills();
+let billToCancel = null;
+
+function openCancelDialog(bill) {
+  billToCancel = bill.id;
+  document.getElementById("cancelBillName").textContent = bill.title;
+  document.getElementById("cancelReason").value = "";
+  document.getElementById("cancelMessage").textContent = "";
+  if (bill.payments && bill.payments.length > 0) {
+    showToast("Can't cancel", "This bill  already has payments");
+    return;
+  }
+  document.getElementById("cancelDialog").showModal();
 }
+document
+  .getElementById("keepButton")
+  .addEventListener("click", function () {
+    document.getElementById("cancelDialog").close();
+  });
+
 
 const billForm = document.getElementById("billForm");
 billForm.addEventListener("submit", function (event) {
@@ -62,6 +74,8 @@ billForm.addEventListener("submit", function (event) {
     dueDate: billDue,
     note: billNote,
     createdAt: new Date().toISOString(),
+    status: "active",
+    payments: [],
   };
   bills.push(newBill);
   saveBills();
@@ -97,18 +111,17 @@ function renderBills() {
     const added = document.createElement("p");
     added.className = "bill-note";
 
-
     top.appendChild(title);
     top.appendChild(amount);
     card.appendChild(top);
     card.appendChild(note);
 
-    const deleteButton = document.createElement("button");
-    deleteButton.type = "button";
-    deleteButton.className = "delete-button";
-    deleteButton.textContent = "Delete";
-    deleteButton.addEventListener("click", function () {
-      deleteBill(bill.id);
+    const cancelButton = document.createElement("button");
+    cancelButton.type = "button";
+    cancelButton.className = "cancel-button";
+    cancelButton.textContent = "Cancel bill";
+    cancelButton.addEventListener("click", function () {
+      openCancelDialog(bill);
     });
 
     if (bill.note !== "") {
@@ -119,17 +132,30 @@ function renderBills() {
     }
 
     if (bill.createdAt) {
-      added.textContent = "Added "+new Date(bill.createdAt).toLocaleString("en-GB", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
+      added.textContent =
+        "Added " +
+        new Date(bill.createdAt).toLocaleString("en-GB", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
       card.appendChild(added);
     }
-
-    card.appendChild(deleteButton);
+    if (bill.status === "canceled") {
+        card.classList.add("bill-card-canceled");
+        const pill = document.createElement("span");
+        pill.className = "status status-canceled";
+        pill.textContent = "Canceled";
+        const why = document.createElement("p");
+        why.className = "bill-note";
+        why.textContent = "Reason: " + bill.cancelReason;
+        card.appendChild(pill);
+        card.appendChild(why);
+    } else {
+        card.appendChild(cancelButton);
+    }
     billList.appendChild(card);
   });
 }
@@ -167,4 +193,25 @@ function showCurrentMonth() {
 
 renderBills();
 showCurrentMonth();
+
+document
+  .getElementById("confirmCancelButton")
+  .addEventListener("click", function () {
+    const reason = document.getElementById("cancelReason").value.trim();
+    const message = document.getElementById("cancelMessage");
+    if (reason === "") {
+      message.textContent = "Please give a reason.";
+      return;
+    }
+    const bill = bills.find(function (item) {
+      return item.id === billToCancel;
+    });
+    bill.status = "canceled";
+    bill.cancelReason = reason;
+    bill.cancelledAt = new Date().toISOString();
+    saveBills();
+    document.getElementById("cancelDialog").close();
+    renderBills();
+    showToast("Bill canceled", bill.title);
+  });
 

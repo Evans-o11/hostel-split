@@ -34,7 +34,7 @@ function openCancelDialog(bill) {
   document.getElementById("cancelReason").value = "";
   document.getElementById("cancelMessage").textContent = "";
   if (bill.payments && bill.payments.length > 0) {
-    showToast("Can't cancel", "This bill  already has payments");
+    showToast("Can't cancel", "This bill already has payments");
     return;
   }
   document.getElementById("cancelDialog").showModal();
@@ -215,3 +215,132 @@ document
     showToast("Bill canceled", bill.title);
   });
 
+const savedRoommates = localStorage.getItem("hostelRoommates");
+let roommates = savedRoommates ? JSON.parse(savedRoommates) : [];
+
+function saveRoommates() {
+  localStorage.setItem("hostelRoommates", JSON.stringify(roommates));
+}
+
+function cleanPhone(text) {
+  let digits = text.replace(/\D/g, "");
+  if (digits.startsWith("0") && digits.length === 11) {
+    digits = "234" + digits.slice(1);
+  }
+  return digits;
+}
+
+
+
+
+const roommateForm = document.getElementById("roommateForm");
+roommateForm.addEventListener("submit", function (event) {
+  event.preventDefault();
+  const name = document.getElementById("roommateName").value.trim();
+  const message = document.getElementById("roommateMessage");
+
+  if (name === "") {
+    message.textContent = "Please enter a name.";
+    return;
+  }
+  const exists = roommates.some(function (roommate) {
+    return roommate.name.toLowerCase() === name.toLowerCase();
+  });
+  if (exists) {
+    message.textContent = "That name is already on the list.";
+    return;
+  }
+  const phone = cleanPhone(document.getElementById("roommatePhone").value);
+  if (phone.length < 10 || phone.length > 15) {
+    message.textContent = "Enter a valid WhatsApp number.";
+    return
+  } 
+  const phoneUsed = roommates.some(function (roommate) {
+    return roommate.phone === phone;
+  });
+  if (phoneUsed) {
+    message.textContent = "That number is already on the list";
+    return
+  }
+
+
+
+  message.textContent = "";
+  roommates.push({
+    id: Date.now(),
+    name: name,
+    phone: phone,
+    status:"invited",
+    createdAt: new Date().toISOString(),
+
+
+
+  });
+  saveRoommates();
+  renderRoommates();
+  roommateForm.reset();
+  showToast("Roommate added", name);
+});
+
+function renderRoommates() {
+  const roommateList = document.getElementById("roommateList");
+  roommateList.innerHTML = "";
+  document.getElementById("roommateCount").textContent =
+    "Roommates (" + roommates.length + ")";
+
+  if (roommates.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "bill-note";
+    empty.textContent = "No roommates yet. Add the first one above.";
+    roommateList.appendChild(empty);
+    return;
+  }
+
+  const list = document.createElement("div");
+  list.className = "person-list";
+  roommates.forEach(function (roommate) {
+    const row = document.createElement("div");
+    row.className = "person-row";
+
+    const left = document.createElement("div");
+    const name = document.createElement("p");
+    name.className = "person-name";
+    name.textContent = roommate.name;
+    left.appendChild(name);
+    
+    if (roommate.phone) {
+      const phoneText = document.createElement("p");
+      phoneText.className = "person-meta";
+      phoneText.textContent = "+" + roommate.phone;
+      left.appendChild(phoneText);
+      const inviteText = "Hi " + roommate.name + ", I've added you to Hostel Split, where I will post our hostel bills and each person's share. I'll send you the join link as soon as it is ready.";
+      const invite = document.createElement("a")
+      invite.className = "invite-link";
+      invite.textContent = "Invite on WhatsApp";
+      invite.href =
+        "https://wa.me/" +
+        roommate.phone +
+        "?text=" +
+        encodeURIComponent(inviteText);
+      invite.target = "_blank";
+      invite.rel = "noopener";
+      left.appendChild(invite);
+    }
+      const pill = document.createElement("span");
+      pill.className = "status status-unpaid";
+      pill.textContent = "Invited";
+      row.appendChild(left);
+    row.appendChild(pill);
+    list.appendChild(row);
+    
+   
+  });
+  roommateList.appendChild(list);
+}
+
+renderRoommates();
+
+
+ 
+
+  

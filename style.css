@@ -402,3 +402,38 @@ margin-top: var(--big-gap);
     color: var(--unpaid-text);
     background-color : var(--unpaid-background);
 }
+
+.inline-form {
+    display: flex;
+    gap: var(--tiny-gap);
+    align-items: flex-start;
+    margin-top: var(--big-gap);
+}
+
+.inline-form .field {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.inline-form .primary-button {
+    width: auto;
+    padding: 12px 20px;
+}
+
+.person-meta {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--muted-text);
+}
+
+.invite-link {
+    display: inline-block;
+    margin-top: var(--tiny-gap);
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--brand-green);
+    background-color: var(--paid-background);
+    border-radius: 999px;
+    text-decoration: none;
+}

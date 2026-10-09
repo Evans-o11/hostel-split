@@ -437,3 +437,54 @@ margin-top: var(--big-gap);
     border-radius: 999px;
     text-decoration: none;
 }
+
+#screenRoommates .stat-row {
+    margin-bottom: var(--big-gap);
+}
+
+.row-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--tiny-gap);
+}
+
+.mark-button {
+    margin-top: var(--tiny-gap);
+    padding: 4px 10px;
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--main-text);
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.choice-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tiny-gap);
+    margin-bottom: var(--big-gap);
+}
+
+.choice-list[hidden] {
+    display: none;
+}
+
+.choice {
+    display: flex;
+
+    gap: 10px;
+    padding: 12px;
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    border-radius: var(--soft-rounded-corner);
+    cursor: pointer;
+}
+
+.choice input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--brand-green);
+}

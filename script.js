@@ -66,7 +66,27 @@ billForm.addEventListener("submit", function (event) {
     formMessage.textContent = "Amount must be more than 0.";
     return;
   }
-  formMessage.textContent = "";
+  if (!Number.isInteger(billAmount)) {
+    formMessage.textContent = "Enter a whole amount in naira.";
+    return;
+  }const recipients = chosenRecipients();
+ if (recipients.length === 0) {
+   formMessage.textContent =
+     "Choose at least one joined roommate for this bill.";
+   return;
+ }
+formMessage.textContent = "";
+
+  const amounts = splitAmount(billAmount, recipients.length);
+  const shares =recipients.map(function (roommate, index) {
+    return { roommateId: roommate.id, name: roommate.name, amount: amounts[index] };
+  });
+
+
+
+
+
+
   const newBill = {
     id: Date.now(),
     title: billTitle,
@@ -76,6 +96,7 @@ billForm.addEventListener("submit", function (event) {
     createdAt: new Date().toISOString(),
     status: "active",
     payments: [],
+    shares: shares,
   };
   bills.push(newBill);
   saveBills();
@@ -85,6 +106,23 @@ billForm.addEventListener("submit", function (event) {
 showToast("Bill added", billTitle);
  
 });
+
+function formatNaira(number) {
+   return "₦" + number.toLocaleString("en-NG");
+ }
+function splitAmount(total, people) {
+     const base = Math.floor(total / people);
+     const extra = total - base * people;
+     const parts = [];
+     for (let i = 0; i < people; i++) {
+       parts.push(i < extra ? base + 1 : base);
+     }
+     return parts;
+}
+
+
+
+
 
 function renderBills() {
   const billList = document.getElementById("billList");
@@ -101,8 +139,8 @@ function renderBills() {
     title.className = "bill-title";
 
     const amount = document.createElement("p");
-    amount.textContent = "₦" + bill.amount;
     amount.className = "bill-amount";
+    amount.textContent = formatNaira(bill.amount);
 
     const note = document.createElement("p");
     note.className = "bill-note";
@@ -115,6 +153,23 @@ function renderBills() {
     top.appendChild(amount);
     card.appendChild(top);
     card.appendChild(note);
+
+    if (bill.shares && bill.shares.length > 0) {
+      const highest = bill.shares[0].amount;
+      const lowest = bill.shares[bill.shares.length - 1].amount;
+      let eachText = formatNaira(lowest) + " each";
+      if (highest !== lowest) {
+        eachText =
+          formatNaira(lowest) + " to " + formatNaira(highest) + " each";
+      }
+
+      const split = document.createElement("p");
+      split.className = "bill-note";
+      split.textContent =
+        "Split between " + bill.shares.length + " roommates, " + eachText;
+      card.appendChild(split);
+    }
+
 
     const cancelButton = document.createElement("button");
     cancelButton.type = "button";
@@ -170,8 +225,15 @@ document
   .classList.add("bills-view-active");
 }
 document.getElementById("addBillButton").addEventListener("click", function () {
+  renderRecipientChoices();
   showBillsView("Form");
 });
+document.querySelectorAll('input[name="billFor"]').forEach(function (radio) {
+  radio.addEventListener("change", renderRecipientChoices);
+});
+
+
+
 document.getElementById("backButton").addEventListener("click", function () {
   showBillsView("List");
 });
@@ -259,7 +321,7 @@ roommateForm.addEventListener("submit", function (event) {
     return roommate.phone === phone;
   });
   if (phoneUsed) {
-    message.textContent = "That number is already on the list";
+    message.textContent = "That number is already on the list.";
     return
   }
 
@@ -282,7 +344,109 @@ roommateForm.addEventListener("submit", function (event) {
   showToast("Roommate added", name);
 });
 
+function markJoined(id) {
+  const roommate = roommates.find(function (item) {
+    return item.id === id;
+  })
+  roommate.status = "joined";
+  roommate.joinedAt = new Date().toISOString();
+  saveRoommates();
+  renderRoommates();
+  showToast("Roommate joined", roommate.name);
+}
+
+function updateRecipientNote() {
+  const count = chosenRecipients().length;
+  const note = document.getElementById("recipientNote");
+  const button = document.getElementById("billSubmitButton");
+
+  if (count === 0) {
+    note.textContent =
+      joinedRoommates().length === 0
+        ? "No roommate has joined yet."
+        : "Select at least one roommate.";
+  } else {
+    note.textContent = "This bill will be shared with " + count + " roommates.";
+  }
+  if (selectedMode() === "all") {
+    button.textContent = "Add bill to all roommates";
+  } else {
+    button.textContent =
+      "Add bill to " + count + (count === 1 ? " roommate" : " roommates");
+  }
+ }
+
+function joinedRoommates() {
+   return roommates.filter(function (roommate) {
+     return roommate.status === "joined";
+   });
+}
+function selectedMode() {
+    return document.querySelector('input[name="billFor"]:checked').value;
+}
+
+function chosenRecipients() {
+  const joined = joinedRoommates();
+  if (selectedMode() === "all") {
+    return joined;
+  }
+  const boxes = document.querySelectorAll("#recipientChoices input:checked");
+  const ids = Array.from(boxes).map(function (box) {
+    return Number(box.value);
+  });
+  return joined.filter(function (roommate) {
+    return ids.includes(roommate.id);
+  });
+}
+  
+
+
+
+
+  function renderRecipientChoices() {
+  const list = document.getElementById("recipientChoices");
+  list.innerHTML = "";
+  list.hidden = selectedMode() === "all";
+
+  joinedRoommates().forEach(function (roommate) {
+    const row = document.createElement("label");
+    row.className = "choice";
+
+    const box = document.createElement("input");
+    box.type = "checkbox";
+    box.value = roommate.id;
+    box.checked = true;
+    box.addEventListener("change", updateRecipientNote);
+
+    const name = document.createElement("span");
+    name.textContent = roommate.name;
+
+    row.appendChild(box);
+    row.appendChild(name);
+    list.appendChild(row);
+  });
+  updateRecipientNote()
+}
+
+
+
+
+function updateRoommateStats() {
+  const joined = roommates.filter(function (roommate) {
+    return roommate.status === "joined";
+  }).length;
+  document.getElementById("roommateTotal").textContent = roommates.length;
+  document.getElementById("roommateJoined").textContent = joined;
+  document.getElementById("roommateInvited").textContent =
+    roommates.length - joined;
+}
+
+
+
+
+
 function renderRoommates() {
+  updateRoommateStats();
   const roommateList = document.getElementById("roommateList");
   roommateList.innerHTML = "";
   document.getElementById("roommateCount").textContent =
@@ -301,34 +465,60 @@ function renderRoommates() {
   roommates.forEach(function (roommate) {
     const row = document.createElement("div");
     row.className = "person-row";
+    const isJoined = roommate.status === "joined";
 
     const left = document.createElement("div");
     const name = document.createElement("p");
     name.className = "person-name";
     name.textContent = roommate.name;
     left.appendChild(name);
+    const actions = document.createElement("div");
+    actions.className = "row-actions";
     
     if (roommate.phone) {
       const phoneText = document.createElement("p");
       phoneText.className = "person-meta";
       phoneText.textContent = "+" + roommate.phone;
       left.appendChild(phoneText);
-      const inviteText = "Hi " + roommate.name + ", I've added you to Hostel Split, where I will post our hostel bills and each person's share. I'll send you the join link as soon as it is ready.";
-      const invite = document.createElement("a")
-      invite.className = "invite-link";
-      invite.textContent = "Invite on WhatsApp";
-      invite.href =
-        "https://wa.me/" +
-        roommate.phone +
-        "?text=" +
-        encodeURIComponent(inviteText);
-      invite.target = "_blank";
-      invite.rel = "noopener";
-      left.appendChild(invite);
+      if (!isJoined) {
+        const inviteText =
+          "Hi " +
+          roommate.name +
+          ", I've added you to Hostel Split, where I will post our hostel bills and each person's share. I'll send you the join link as soon as it is ready.";
+        const invite = document.createElement("a");
+        invite.className = "invite-link";
+        invite.textContent = "Invite on WhatsApp";
+        invite.href =
+          "https://wa.me/" +
+          roommate.phone +
+          "?text=" +
+          encodeURIComponent(inviteText);
+        invite.target = "_blank";
+        invite.rel = "noopener";
+        actions.appendChild(invite);
+      }
     }
+
+    if (!isJoined) {
+      const markButton = document.createElement("button");
+      markButton.type = "button";
+      markButton.className = "mark-button";
+      markButton.textContent = "Mark as joined";
+      markButton.addEventListener("click", function () {
+        if (confirm("Has " + roommate.name + " confirmed on WhatsApp that they joined?")) {
+          markJoined(roommate.id);
+        }
+      });
+      actions.appendChild(markButton);
+      left.appendChild(actions);
+    }
+
+
+
+
       const pill = document.createElement("span");
-      pill.className = "status status-unpaid";
-      pill.textContent = "Invited";
+      pill.className = isJoined ? "status status-paid" : "status status-unpaid";
+      pill.textContent = isJoined ? "Joined" : "Invited";
       row.appendChild(left);
     row.appendChild(pill);
     list.appendChild(row);

@@ -113,8 +113,25 @@
               placeholder="e.g. Covers September and October"
             ></textarea>
           </div>
+
+<p class="section-label">Who is this bill for?</p>
+<div class="choice-list">
+    <label class="choice">
+    <input type="radio" name="billFor" value="all" checked />
+    <span>All joined roommates</span>
+  </label>
+  <label class="choice">
+    <input type="radio" name="billFor" value="selected" />
+    <span>Select roommates</span>
+  </label>
+</div>
+
+<div id="recipientChoices" class="choice-list" hidden></div>
+
+
+          <p id="recipientNote" class="bill-note"></p>
          <p id="formMessage" class="form-message"></p>
-          <button type="submit" class="primary-button">Save bill</button>
+          <button type="submit" class="primary-button" id="billSubmitButton">Add bill to all roommates</button>
  
         </form>
        </div>
@@ -130,6 +147,21 @@
 
       <section id="screenRoommates" class="screen">
         <h2>Roommates</h2>
+<div class="stat-row">
+  <div class="stat-card">
+    <p class="stat-label">Total</p>
+    <p class="stat-value" id="roommateTotal">0</p>
+  </div>
+  <div class="stat-card">
+    <p class="stat-label">Joined</p>
+    <p class="stat-value" id="roommateJoined">0</p>
+  </div>
+  <div class="stat-card">
+    <p class="stat-label">Invited</p>
+    <p class="stat-value" id="roommateInvited">0</p>
+  </div>
+</div>
+
         <form action="" id="roommateForm"  >
 <div class="field">
   <label for="roommateName">Name</label>

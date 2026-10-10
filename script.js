@@ -24,6 +24,8 @@ let bills = saved ? JSON.parse(saved) : [];
 
 function saveBills() {
   localStorage.setItem("hostelBills", JSON.stringify(bills));
+  updateHomeStats();
+  renderHome();
 }
 
 let billToCancel = null;
@@ -119,6 +121,14 @@ function splitAmount(total, people) {
      }
      return parts;
 }
+function todayString(){
+  return new Date().toLocaleDateString("en-CA");
+}
+function isPastDue(bill) {
+  return bill.dueDate < todayString();
+}
+
+
 
 function totalPaid(bill) {
   return (bill.payments || [])
@@ -145,6 +155,10 @@ function shareState(bill, share) {
   if (paid >= share.amount) {
     return "paid";
   }
+
+  if (isPastDue(bill)) {
+    return "overdue";
+  }
   if (paid > 0) {
     return "part";
   }
@@ -154,7 +168,28 @@ function shareState(bill, share) {
 
 
 
+function updateHomeStats() {
+  let collected = 0;
+  let outstanding = 0;
+  let overdue = 0;
 
+  bills.forEach(function (bill) {
+    if (bill.status === "canceled") {
+      return;
+    }
+    const paid = totalPaid(bill);
+    const left = bill.amount - paid;
+    collected += paid;
+    outstanding += left;
+    if (isPastDue(bill)) {
+      overdue += left;
+    }
+  })
+  document.getElementById("statCollected").textContent = formatNaira(collected);
+    document.getElementById("statOutstanding").textContent = formatNaira(outstanding);
+    document.getElementById("statOverdue").textContent = formatNaira(overdue);
+
+}
 
 
 let openBillId = null;
@@ -163,8 +198,7 @@ function openBillDetail(bill) {
   renderBillDetail();
   showBillsView("Detail");
 }
-
-function renderBillDetail() {
+function renderBillDetail (){
   const bill = bills.find(function (item) {
     return item.id === openBillId;
   });
@@ -173,6 +207,10 @@ function renderBillDetail() {
   if (!bill) {
     return;
   }
+  drawBill(bill, box);
+}
+
+function drawBill(bill, box)  {
   const card = document.createElement("div");
   card.className = "bill-card";
 
@@ -186,6 +224,10 @@ function renderBillDetail() {
   amount.textContent = formatNaira(bill.amount);
   top.appendChild(title);
   top.appendChild(amount);
+const due = document.createElement("p");
+due.className = "bill-note";
+  due.textContent = "Due " + bill.dueDate;
+  
 
   const collected = totalPaid(bill);
   const summary = document.createElement("p");
@@ -201,10 +243,21 @@ function renderBillDetail() {
     Math.min(100, Math.round((collected / bill.amount) * 100)) + "%";
   bar.appendChild(fill);
 
-  card.appendChild(top);
-  card.appendChild(summary);
-  card.appendChild(bar);
-  box.appendChild(card);
+const paidCount = (bill.shares || []).filter(function (share) {
+  return shareState(bill, share) === "paid";
+}).length;
+const people = document.createElement("p");
+people.className = "bill-note";
+  people.textContent = paidCount + " of " + (bill.shares || []).length + " paid";
+  
+card.appendChild(top);
+card.appendChild(due);
+card.appendChild(summary);
+card.appendChild(bar);
+card.appendChild(people);
+box.appendChild(card);
+
+
 
   const label = document.createElement("p");
   label.className = "section-label";
@@ -257,6 +310,9 @@ if (state !== "paid") {
     if (state === "paid") {
       pill.className = "status status-paid";
       pill.textContent = "Paid";
+    } else if (state === "overdue") {
+      pill.className = "status status-overdue";
+      pill.textContent = "Overdue";
     } else if (state === "part") {
       pill.className = "status status-part";
       pill.textContent = "Part-paid";
@@ -289,16 +345,33 @@ function openPaymentDialog(bill, share) {
    document.getElementById("paymentDialog").showModal();
 }
 
+function currentBill() {
+  const active = bills.filter(function (bill) {
+    return bill.status !== "canceled";
+  });
+  return active[active.length - 1];
+}
+function renderHome() {
+  const box = document.getElementById("homeBill");
+  box.innerHTML = "";
+
+  const label = document.createElement("p");
+  label.className = "section-label";
+  label.textContent = "Current bill";
+  box.appendChild(label);
+
+  const bill = currentBill();
+  if (!bill) {
+    const none = document.createElement("p");
+    none.className = "bill-note";
+    none.textContent = "No bills yet. Add one in the Bills tab.";
+    box.appendChild(none);
+    return;
+  }
+  drawBill(bill, box);
+}
 
 
-
-
-
-
-
-  
-  
-  
 function renderBills() {
   const billList = document.getElementById("billList");
   billList.innerHTML = "";
@@ -447,6 +520,9 @@ function showCurrentMonth() {
 
 renderBills();
 showCurrentMonth();
+updateHomeStats();
+renderHome();
+  
 
 document
   .getElementById("confirmCancelButton")

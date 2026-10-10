@@ -120,10 +120,185 @@ function splitAmount(total, people) {
      return parts;
 }
 
+function totalPaid(bill) {
+  return (bill.payments || [])
+    .filter(function (payment) {
+      return payment.status === "confirmed";
+    })
+    .reduce(function (sum, payment) {
+      return sum + payment.amount;
+    }, 0);
+}
+
+function paidBy(bill, roommateId) {
+  return (bill.payments || [])
+    .filter(function (payment) {
+      return payment.roommateId === roommateId && payment.status === "confirmed";
+    })
+    .reduce(function (sum, payment) {
+      return sum + payment.amount;
+    }, 0);
+}
+
+function shareState(bill, share) {
+  const paid = paidBy(bill, share.roommateId);
+  if (paid >= share.amount) {
+    return "paid";
+  }
+  if (paid > 0) {
+    return "part";
+  }
+  return "unpaid";
+}
 
 
 
 
+
+
+
+let openBillId = null;
+function openBillDetail(bill) {
+  openBillId = bill.id;
+  renderBillDetail();
+  showBillsView("Detail");
+}
+
+function renderBillDetail() {
+  const bill = bills.find(function (item) {
+    return item.id === openBillId;
+  });
+  const box = document.getElementById("billDetail");
+  box.innerHTML = "";
+  if (!bill) {
+    return;
+  }
+  const card = document.createElement("div");
+  card.className = "bill-card";
+
+  const top = document.createElement("div");
+  top.className = "bill-top";
+  const title = document.createElement("p");
+  title.className = "bill-title";
+  title.textContent = bill.title;
+  const amount = document.createElement("p");
+  amount.className = "bill-amount";
+  amount.textContent = formatNaira(bill.amount);
+  top.appendChild(title);
+  top.appendChild(amount);
+
+  const collected = totalPaid(bill);
+  const summary = document.createElement("p");
+  summary.className = "bill-note";
+  summary.textContent =
+    "Collected " + formatNaira(collected) + " of " + formatNaira(bill.amount);
+
+  const bar = document.createElement("div");
+  bar.className = "progress";
+  const fill = document.createElement("div");
+  fill.className = "progress-fill";
+  fill.style.width =
+    Math.min(100, Math.round((collected / bill.amount) * 100)) + "%";
+  bar.appendChild(fill);
+
+  card.appendChild(top);
+  card.appendChild(summary);
+  card.appendChild(bar);
+  box.appendChild(card);
+
+  const label = document.createElement("p");
+  label.className = "section-label";
+  label.textContent = "Payments";
+  box.appendChild(label);
+
+  if (!bill.shares || bill.shares.length === 0) {
+    const none = document.createElement("p");
+    none.className = "bill-note";
+    none.textContent = "No split was saved for this bill.";
+    box.appendChild(none);
+    return;
+  }
+
+  const list = document.createElement("div");
+  list.className = "person-list";
+  bill.shares.forEach(function (share) {
+    const row = document.createElement("div");
+    row.className = "person-row";
+    const paid = paidBy(bill, share.roommateId);
+
+    const left = document.createElement("div");
+    const name = document.createElement("p");
+    name.className = "person-name";
+    name.textContent = share.name;
+    const owes = document.createElement("p");
+    owes.className = "person-meta";
+   owes.textContent =
+     paid > 0
+       ? "Paid " + formatNaira(paid) + " of " + formatNaira(share.amount)
+       : formatNaira(share.amount);
+
+    left.appendChild(name);
+    left.appendChild(owes);
+
+    const state = shareState(bill, share);
+if (state !== "paid") {
+  const payButton = document.createElement("button");
+  payButton.type = "button";
+  payButton.className = "mark-button";
+  payButton.textContent = "Record payment";
+  payButton.addEventListener("click", function () {
+    openPaymentDialog(bill, share);
+  });
+  left.appendChild(payButton);
+}
+
+
+    const pill = document.createElement("span");
+    if (state === "paid") {
+      pill.className = "status status-paid";
+      pill.textContent = "Paid";
+    } else if (state === "part") {
+      pill.className = "status status-part";
+      pill.textContent = "Part-paid";
+    } else {
+      pill.className = "status status-unpaid";
+      pill.textContent = "Unpaid";
+    }
+
+    row.appendChild(left);
+    row.appendChild(pill);
+    list.appendChild(row);
+  });
+  box.appendChild(list);
+}
+
+
+
+
+
+let paymentFor = null;
+function openPaymentDialog(bill, share) {
+   const remaining = share.amount - paidBy(bill, share.roommateId);
+   paymentFor = { billId: bill.id, roommateId: share.roommateId };
+   document.getElementById("paymentWho").textContent =
+     share.name + " · " + bill.title;
+   document.getElementById("paymentLeft").textContent =
+     "Still to pay: " + formatNaira(remaining);
+   document.getElementById("paymentAmount").value = remaining;
+   document.getElementById("paymentMessage").textContent = "";
+   document.getElementById("paymentDialog").showModal();
+}
+
+
+
+
+
+
+
+
+  
+  
+  
 function renderBills() {
   const billList = document.getElementById("billList");
   billList.innerHTML = "";
@@ -209,7 +384,18 @@ function renderBills() {
         card.appendChild(pill);
         card.appendChild(why);
     } else {
-        card.appendChild(cancelButton);
+        const viewButton = document.createElement("button");
+        viewButton.type = "button";
+        viewButton.className = "view-button";
+        viewButton.textContent = "View payments";
+        viewButton.addEventListener("click", function () {
+          openBillDetail(bill);
+        });
+const actions = document.createElement("div");
+actions.className = "row-actions";
+actions.appendChild(viewButton);
+actions.appendChild(cancelButton);
+card.appendChild(actions);
     }
     billList.appendChild(card);
   });
@@ -237,6 +423,12 @@ document.querySelectorAll('input[name="billFor"]').forEach(function (radio) {
 document.getElementById("backButton").addEventListener("click", function () {
   showBillsView("List");
 });
+
+document.getElementById("detailBackButton").addEventListener("click", function () {
+  showBillsView("List");
+});
+
+
 
 function showToast(title, text) {
   document.getElementById("toastTitle").textContent = title;
@@ -530,7 +722,43 @@ function renderRoommates() {
 
 renderRoommates();
 
+document
+  .getElementById("paymentCancelButton")
+  .addEventListener("click", function () {
+    document.getElementById("paymentDialog").close();
+  });
+ document.getElementById("paymentSaveButton").addEventListener("click", function () {
+    const bill = bills.find(function (item) {
+        return item.id === paymentFor.billId;
+    });
+ const share = bill.shares.find(function (item) {
+        return item.roommateId === paymentFor.roommateId;
+    });
+  const remaining = share.amount - paidBy(bill, share.roommateId);
+    const amount = Number(document.getElementById("paymentAmount").value);
+    const message = document.getElementById("paymentMessage");
 
- 
-
-  
+    if (!Number.isInteger(amount) || amount <= 0) {
+        message.textContent = "Enter a whole amount more than 0.";
+        return;
+    }
+    if (amount > remaining) {
+        message.textContent = "That is more than the " + formatNaira(remaining) + " still to pay.";
+        return;
+    }
+    if (!bill.payments) {
+        bill.payments = [];
+    }
+    bill.payments.push({
+        id: Date.now(),
+        roommateId: share.roommateId,
+        amount: amount,
+        paidAt: new Date().toISOString(),
+        status: "confirmed",
+        recordedBy: "head",
+    });
+    saveBills();
+    document.getElementById("paymentDialog").close();
+    renderBillDetail();
+    showToast("Payment recorded", share.name + " paid " + formatNaira(amount));
+});

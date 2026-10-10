@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <header>
+    <header> 
       <h1>Hostel Split</h1>
       <p class="tagline">Your simple solution for splitting hostel bills</p>
 
@@ -143,6 +143,11 @@
           </div>
           <div id="billList"></div>
         </div>
+        <div class="bills-view" id="billsDetailView">
+<button type="button" id="detailBackButton" class="back-button">Back</button>
+<div id="billDetail"></div>
+
+        </div>
       </section>
 
       <section id="screenRoommates" class="screen">
@@ -207,6 +212,22 @@
 <button type="button" id="keepButton" class="secondary-button">Keep bill</button>
 <button type="button" id="confirmCancelButton" class="danger-button">Cancel bill</button>
   </div>
+</dialog>
+<dialog id="paymentDialog" class="dialog">
+ <h3 class="dialog-title">Record payment</h3>
+  <p id="paymentWho" class="dialog-text"></p>
+  <p id="paymentLeft" class="dialog-text"></p>
+  <div class="field">
+    <label for="paymentAmount">Amount received (₦)</label>
+    <input type="number" id="paymentAmount" />
+  </div>
+  <p id="paymentMessage" class="form-message"></p>
+  <div class="dialog-actions">
+    <button type="button" id="paymentCancelButton" class="secondary-button">Cancel</button>
+    <button type="button" id="paymentSaveButton" class="confirm-button">Save payment</button>
+  </div>
+
+
 </dialog>
 
     <div id="toast" class="toast">

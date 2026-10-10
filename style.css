@@ -15,6 +15,10 @@
     --paid-background: #DDEFE4;
     --unpaid-text: #4A4F47;
     --unpaid-background: #EEEBE3;
+    --part-text: #8A5A00;
+    --part-background: #FBEFD5;
+
+
 
     --tiny-gap: 8px;
     --big-gap: 16px;
@@ -474,7 +478,7 @@ margin-top: var(--big-gap);
 
 .choice {
     display: flex;
-
+align-items: center;
     gap: 10px;
     padding: 12px;
     background: var(--card-background);
@@ -487,4 +491,36 @@ margin-top: var(--big-gap);
     width: 18px;
     height: 18px;
     accent-color: var(--brand-green);
+}
+
+
+.status-part{
+    background-color: var(--part-background);
+    color: var(--part-text);
+}
+
+.view-button {
+    margin-top: var(--big-gap);
+    padding: 8px 14px;
+    font: inherit;
+    font-size: 0.875rem;
+    color: var(--main-text);
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    border-radius: var(--soft-rounded-corner);
+    cursor: pointer;
+}
+
+
+
+.confirm-button {
+    appearance: none;
+    padding: 10px 16px;
+    font: inherit;
+    font-weight: 500;
+    color: white;
+    background-color: var(--brand-green);
+    border: 0;
+    border-radius: 999px;
+    cursor: pointer;
 }

@@ -524,3 +524,24 @@ align-items: center;
     border-radius: 999px;
     cursor: pointer;
 }
+
+#overdueList .bill-card {
+    margin-top: var(--big-gap);
+}
+
+.overdue-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding-top: 12px;
+    margin-top: 12px;
+    border-top: 1px solid var(--card-border);
+}
+
+.overdue-amount {
+    margin: 0;
+    font-weight: 500;
+    color: var(--overdue-text);
+}
+

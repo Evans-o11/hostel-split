@@ -26,6 +26,7 @@ function saveBills() {
   localStorage.setItem("hostelBills", JSON.stringify(bills));
   updateHomeStats();
   renderHome();
+  renderOverdue();
 }
 
 let billToCancel = null;
@@ -371,6 +372,116 @@ function renderHome() {
   drawBill(bill, box);
 }
 
+function daysLate(bill) {
+   const ms = new Date(todayString()) - new Date(bill.dueDate);
+   return Math.floor(ms / 86400000);
+}
+function overdueByRoommate() {
+     const groups = {};
+     bills.forEach(function (bill) {
+       if (bill.status === "canceled" || !isPastDue(bill)) {
+         return;
+       }
+       (bill.shares || []).forEach(function (share) {
+         const left = share.amount - paidBy(bill, share.roommateId);
+         if (left <= 0) {
+           return;
+         }
+         if (!groups[share.roommateId]) {
+           groups[share.roommateId] = { name: share.name, total: 0, items: [] };
+         }
+         groups[share.roommateId].total += left;
+         groups[share.roommateId].items.push({
+           bill: bill,
+           share: share,
+           left: left,
+         });
+       });
+     });
+     return Object.values(groups).sort(function (a, b) {
+       return b.total - a.total;
+     });
+}
+function renderOverdue() {
+  const box = document.getElementById("overdueList");
+    box.innerHTML = "";
+    const groups = overdueByRoommate();
+
+    if (groups.length === 0) {
+        const none = document.createElement("p");
+        none.className = "bill-note";
+        none.textContent = "Nothing is overdue. Everyone is up to date.";
+        box.appendChild(none);
+        return;
+    }
+
+    const all = groups.reduce(function (sum, group) {
+        return sum + group.total;
+    }, 0);
+    const summary = document.createElement("p");
+    summary.className = "bill-note";
+    summary.textContent =
+        formatNaira(all) + " overdue from " + groups.length +
+        (groups.length === 1 ? " roommate" : " roommates");
+    box.appendChild(summary);
+
+    groups.forEach(function (group) {
+        const card = document.createElement("div");
+        card.className = "bill-card";
+
+        const top = document.createElement("div");
+        top.className = "bill-top";
+        const name = document.createElement("p");
+        name.className = "bill-title";
+        name.textContent = group.name;
+        const total = document.createElement("p");
+        total.className = "bill-amount overdue-amount";
+        total.textContent = formatNaira(group.total);
+        top.appendChild(name);
+        top.appendChild(total);
+        card.appendChild(top);
+
+        group.items.forEach(function (item) {
+            const row = document.createElement("div");
+            row.className = "overdue-row";
+
+            const left = document.createElement("div");
+            const title = document.createElement("p");
+            title.className = "person-name";
+            title.textContent = item.bill.title;
+
+            const days = daysLate(item.bill);
+            const meta = document.createElement("p");
+            meta.className = "person-meta";
+            meta.textContent =
+                "Due " + item.bill.dueDate + " · " + days +
+                (days === 1 ? " day" : " days") + " overdue";
+
+            const payButton = document.createElement("button");
+            payButton.type = "button";
+            payButton.className = "mark-button";
+            payButton.textContent = "Record payment";
+            payButton.addEventListener("click", function () {
+                openPaymentDialog(item.bill, item.share);
+            });
+
+            left.appendChild(title);
+            left.appendChild(meta);
+            left.appendChild(payButton);
+
+            const amount = document.createElement("p");
+            amount.className = "overdue-amount";
+            amount.textContent = formatNaira(item.left);
+
+            row.appendChild(left);
+            row.appendChild(amount);
+            card.appendChild(row);
+        });
+        box.appendChild(card);
+    });
+}
+
+
 
 function renderBills() {
   const billList = document.getElementById("billList");
@@ -522,7 +633,7 @@ renderBills();
 showCurrentMonth();
 updateHomeStats();
 renderHome();
-  
+renderOverdue();
 
 document
   .getElementById("confirmCancelButton")

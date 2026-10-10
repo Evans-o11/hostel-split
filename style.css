@@ -545,3 +545,22 @@ align-items: center;
     color: var(--overdue-text);
 }
 
+nav[hidden] {
+    display: none;
+}
+
+.hostel-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.edit-link {
+    padding: 0;
+    font: inherit;
+    font-size: 0.875rem;
+    color: var(--brand-green);
+    background: none;
+    border: 0;
+    cursor: pointer;
+}

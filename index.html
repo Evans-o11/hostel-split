@@ -18,11 +18,27 @@
       <p class="tagline">Your simple solution for splitting hostel bills</p>
 
       <p id="hostelName">Your hostel name</p>
+      <div class="hostel-row">
+        <button type="button" id="editHostelButton" class="edit-link">Edit</button>
+        </div>
     </header>
 
     <main>
       <section id="screenWelcome" class="screen">
         <h2>Set up your hostel</h2>
+        <p class="bill-note">Tell us about your hostel to get started.</p>
+        <form id="setupForm">
+          <div class="field">
+            <label for="setupHostel">Hostel name</label>
+            <input type="text" name="setupHostel" id="setupHostel" placeholder="e.g. It skills Camp nou">
+          </div>
+          <div class="field">
+            <label for="setupHead">Your name</label>
+            <input type="text" name="setUpHead" id="setupHead" placeholder="e.g. Stella Evans">
+          </div>
+          <p id="setupMessage" class="form-message"></p>
+          <button type="submit" id="setupButton" class="primary-button">Start</button>
+        </form>
       </section>
 
       <section id="screenHome" class="screen screen-active">

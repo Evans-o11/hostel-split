@@ -918,7 +918,8 @@ document
     const bill = bills.find(function (item) {
         return item.id === paymentFor.billId;
     });
- const share = bill.shares.find(function (item) {
+   
+const share = bill.shares.find(function (item) {
         return item.roommateId === paymentFor.roommateId;
     });
   const remaining = share.amount - paidBy(bill, share.roommateId);
@@ -948,4 +949,60 @@ document
     document.getElementById("paymentDialog").close();
     renderBillDetail();
     showToast("Payment recorded", share.name + " paid " + formatNaira(amount));
+ });
+
+const savedSettings = localStorage.getItem("hostelSettings");
+let settings = savedSettings ? JSON.parse(savedSettings) : null;
+
+function saveSettings() {
+  localStorage.setItem("hostelSettings", JSON.stringify(settings));
+}
+function applySettings() {
+  const nav = document.querySelector("nav");
+  const button = document.getElementById("setupButton");
+  document.getElementById("editHostelButton").hidden = !settings;
+  if (!settings) {
+    nav.hidden = true;
+    button.textContent = "Start";
+    showScreen("Welcome");
+    return;
+  }
+  nav.hidden = false;
+  button.textContent = "Save changes";
+  document.getElementById("hostelName").textContent = settings.hostelName;
+}
+
+const setupForm = document.getElementById("setupForm");
+setupForm.addEventListener("submit", function (event) {
+  event.preventDefault();
+  const hostelName = document.getElementById("setupHostel").value.trim();
+  const headName = document.getElementById("setupHead").value.trim();
+  const message = document.getElementById("setupMessage");
+
+  if (hostelName === "") {
+    message.textContent = "Please enter your hostel's name.";
+    return;
+  }
+  if (headName === "") {
+    message.textContent = "Please enter your name.";
+    return;
+  }
+  message.textContent = "";
+  settings = {
+    hostelName: hostelName,
+    headName: headName,
+    createdAt: settings ? settings.createdAt : new Date().toISOString(),
+  };
+  saveSettings();
+  applySettings();
+  showScreen("Home");
+  showToast("Hostel saved", hostelName);
 });
+document
+  .getElementById("editHostelButton")
+  .addEventListener("click", function () {
+    document.getElementById("setupHostel").value = settings.hostelName;
+    document.getElementById("setupHead").value = settings.headName;
+    showScreen("Welcome");
+  }); 
+applySettings();

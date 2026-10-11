@@ -49,7 +49,7 @@ header {
     padding: var(--big-gap);
     background-color: var(--card-background);
     border-bottom: 1px solid var(--card-border);
-    /* border-radius:var(--soft-rounded-corner) */
+    border-radius:var(--soft-rounded-corner)
 }
 h1{
     font-size: 1.25rem;
@@ -216,7 +216,8 @@ nav button.active{
     margin-bottom: var(--tiny-gap);
 }
 .field input,
-.field textarea{
+.field textarea,
+.field select {
     width: 100%;
     padding: 12px;
     font: inherit;
@@ -573,4 +574,45 @@ nav[hidden] {
 #paymentWho,
 #cancelBillName {
     text-transform: capitalize;
+}
+
+.outline-button {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: var(--big-gap);
+    font: inherit;
+    font-weight: 500;
+    color: var(--main-text);
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    border-radius: var(--soft-rounded-corner);
+    cursor: pointer;
+}
+
+.history-row {
+    cursor: pointer;
+}
+
+.chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--tiny-gap);
+    margin-bottom: var(--big-gap);
+}
+
+.chip {
+    padding: 6px 14px;
+    font: inherit;
+    font-size: 0.875rem;
+    color: var(--muted-text);
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.chip-active {
+    color: white;
+    background-color: var(--brand-green);
+    border-color: var(--brand-green);
 }

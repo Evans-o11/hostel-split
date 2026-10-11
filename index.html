@@ -125,6 +125,7 @@
        </div>
         <div class="bills-view bills-view-active" id="billsListView">
           <button type="button" id="addBillButton" class="primary-button">Add bill</button>
+          <button type="button" id="historyButton" class="outline-button">Bill history</button>
           <div class="month-row">
             <p class="section-label">Current bills</p>
             <p id="currentMonth" class="month-badge"></p>
@@ -135,6 +136,25 @@
 <button type="button" id="detailBackButton" class="back-button">Back</button>
 <div id="billDetail"></div>
 
+        </div>
+        <div class="bills-view" id="billsHistoryView">
+         <button type="button" id="historyBackButton" class="back-button">Back</button>
+           <div class="field">
+    <label for="historyMonth">Month</label>
+    <select id="historyMonth"></select>
+  </div>
+  <div class="chip-row" id="historyFilters">
+<button type="button" class="chip chip-active" data-filter="all">All</button>
+  <button type="button" class="chip" data-filter="open">Open</button>
+  <button type="button" class="chip" data-filter="overdue">Overdue</button>
+  <button type="button" class="chip" data-filter="settled">Settled</button>
+  <button type="button" class="chip" data-filter="canceled">Canceled</button>
+
+
+
+  </div>
+  <div id="historyList"></div>
+</div>
         </div>
       </section>
 

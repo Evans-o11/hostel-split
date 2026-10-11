@@ -27,6 +27,7 @@ function saveBills() {
   updateHomeStats();
   renderHome();
   renderOverdue();
+  renderHistory();
 }
 
 let billToCancel = null;
@@ -72,7 +73,13 @@ billForm.addEventListener("submit", function (event) {
   if (!Number.isInteger(billAmount)) {
     formMessage.textContent = "Enter a whole amount in naira.";
     return;
-  }const recipients = chosenRecipients();
+  }
+  if (billDue < todayString()) {
+    formMessage.textContent =
+      "The due date can't be in the past. If the bill is late, say so in the note.";
+    return;
+  }
+  const recipients = chosenRecipients();
  if (recipients.length === 0) {
    formMessage.textContent =
      "Choose at least one joined roommate for this bill.";
@@ -194,11 +201,15 @@ function updateHomeStats() {
 
 
 let openBillId = null;
-function openBillDetail(bill) {
+let detailFrom = "List";
+function openBillDetail(bill, from) {
   openBillId = bill.id;
+  detailFrom = from || "List";
   renderBillDetail();
   showBillsView("Detail");
 }
+
+
 function renderBillDetail (){
   const bill = bills.find(function (item) {
     return item.id === openBillId;
@@ -481,12 +492,203 @@ function renderOverdue() {
     });
 }
 
+function monthKey(bill) {
+  if (bill.createdAt) {
+    return new Date(bill.createdAt).toLocaleDateString("en-CA").slice(0, 7);
+  }
+  return (bill.dueDate || "").slice(0, 7);
+}
+
+function monthLabel(key) {
+  return new Date(key + "-15").toLocaleDateString("en-GB", {
+    month: "long",
+    year: "numeric",
+  });
+}
+
+function billStatus(bill) {
+  if (bill.status === "canceled") {
+    return "canceled";
+  }
+  if (totalPaid(bill) >= bill.amount) {
+    return "settled";
+  }
+  if (isPastDue(bill)) {
+    return "overdue";
+  }
+  return "open";
+}
+
+function billsByMonth() {
+    const groups = {};
+    bills.forEach(function (bill) {
+        const key = monthKey(bill);
+        if (!groups[key]) {
+            groups[key] = { key: key, bills: [] };
+        }
+        groups[key].bills.push(bill);
+    });
+    return Object.values(groups).sort(function (a, b) {
+        return a.key < b.key ? 1 : -1;
+    });
+}
+
+
+
+
+
+
+function statCard(label, value) {
+  const card = document.createElement("div");
+  card.className = "stat-card";
+  const small = document.createElement("p");
+  small.className = "stat-label";
+  small.textContent = label;
+  const big = document.createElement("p");
+  big.className = "stat-value";
+  big.textContent = value;
+  card.appendChild(small);
+  card.appendChild(big);
+  return card;
+}
+
+let historyFilter = "all";
+function matchesFilter(bill) {
+    return historyFilter === "all" || billStatus(bill) === historyFilter;
+}
+
+
+
+
+function renderHistory() {
+  const select = document.getElementById("historyMonth");
+  const chosen = select.value || "all";
+  const groups = billsByMonth();
+
+  select.innerHTML = "";
+  const everything = document.createElement("option");
+  everything.value = "all";
+  everything.textContent = "All months";
+  select.appendChild(everything);
+  groups.forEach(function (group) {
+    const option = document.createElement("option");
+    option.value = group.key;
+    option.textContent = monthLabel(group.key);
+    select.appendChild(option);
+  });
+  select.value = chosen;
+  if (select.value === "") {
+    select.value = "all";
+  }
+
+  const box = document.getElementById("historyList");
+  box.innerHTML = "";
+  const shown = groups.filter(function (group) {
+   const monthOk = select.value === "all" || group.key === select.value;
+   return monthOk && group.bills.some(matchesFilter);
+  });
+  if (shown.length === 0) {
+    const none = document.createElement("p");
+    none.className = "bill-note";
+   none.textContent = bills.length === 0 ? "No bills yet." : "No bills match this filter.";
+    box.appendChild(none);
+    return;
+  }
+
+  const looks = {
+    settled: ["status status-paid", "Settled"],
+    open: ["status status-unpaid", "Open"],
+    overdue: ["status status-overdue", "Overdue"],
+    canceled: ["status status-canceled", "Canceled"],
+  };
+
+  shown.forEach(function (group) {
+    const visible = group.bills.filter(matchesFilter);
+    const label = document.createElement("p");
+    label.className = "section-label";
+    label.textContent =
+      monthLabel(group.key) +
+      " · " +
+      visible.length +
+      (visible.length === 1 ? " bill" : " bills");
+    box.appendChild(label);
+
+    let billed = 0;
+    let collected = 0;
+    group.bills.forEach(function (bill) {
+      if (bill.status === "canceled") {
+        return;
+      }
+      billed += bill.amount;
+      collected += totalPaid(bill);
+    });
+    const stats = document.createElement("div");
+    stats.className = "stat-row";
+    stats.appendChild(statCard("Billed", formatNaira(billed)));
+    stats.appendChild(statCard("Collected", formatNaira(collected)));
+    stats.appendChild(statCard("Outstanding", formatNaira(billed - collected)));
+    box.appendChild(stats);
+
+    const list = document.createElement("div");
+    list.className = "person-list";
+    list.style.marginTop = "16px";
+    visible
+      .slice()
+      .reverse()
+      .forEach(function (bill) {
+        const row = document.createElement("div");
+        row.className = "person-row history-row";
+
+        const left = document.createElement("div");
+        const title = document.createElement("p");
+        title.className = "person-name";
+        title.textContent = bill.title;
+        const meta = document.createElement("p");
+        meta.className = "person-meta";
+        meta.textContent =
+          "Due " + bill.dueDate + " · " + formatNaira(bill.amount);
+        left.appendChild(title);
+        left.appendChild(meta);
+
+        const look = looks[billStatus(bill)];
+        const pill = document.createElement("span");
+        pill.className = look[0];
+        pill.textContent = look[1];
+
+        row.appendChild(left);
+        row.appendChild(pill);
+        row.addEventListener("click", function () {
+          openBillDetail(bill, "History");
+        });
+        list.appendChild(row);
+      });
+    box.appendChild(list);
+  });
+}
+
+
+
+
+
+
+
 
 
 function renderBills() {
   const billList = document.getElementById("billList");
   billList.innerHTML = "";
-  bills.forEach(function (bill) {
+const current = bills.filter(function (bill) {
+  return monthKey(bill) === todayString().slice(0, 7);
+});
+  if (current.length === 0) {
+    const none = document.createElement("p");
+    none.className = "bill-note";
+    none.textContent = "No bills this month yet.";
+    billList.appendChild(none);
+    return;
+  }
+
+  current.forEach(function (bill) {
     const card = document.createElement("div");
     card.className = "bill-card";
 
@@ -595,6 +797,7 @@ document
   .classList.add("bills-view-active");
 }
 document.getElementById("addBillButton").addEventListener("click", function () {
+  document.getElementById("billDue").min = todayString();
   renderRecipientChoices();
   showBillsView("Form");
 });
@@ -609,10 +812,25 @@ document.getElementById("backButton").addEventListener("click", function () {
 });
 
 document.getElementById("detailBackButton").addEventListener("click", function () {
-  showBillsView("List");
+ showBillsView(detailFrom);
 });
-
-
+document.getElementById("historyButton").addEventListener("click", function () {
+  renderHistory();
+  showBillsView("History");
+});
+document.getElementById("historyBackButton").addEventListener("click", function () {
+    showBillsView("List");
+});
+document.getElementById("historyMonth").addEventListener("change", renderHistory);
+document.querySelectorAll("#historyFilters .chip").forEach(function (chip) {
+  chip.addEventListener("click", function () {
+    historyFilter = chip.dataset.filter;
+    document.querySelectorAll("#historyFilters .chip").forEach(function (other) {
+      other.classList.toggle("chip-active", other === chip);
+    });
+    renderHistory();
+  });
+});
 
 function showToast(title, text) {
   document.getElementById("toastTitle").textContent = title;
@@ -634,6 +852,7 @@ showCurrentMonth();
 updateHomeStats();
 renderHome();
 renderOverdue();
+renderHistory();
 
 document
   .getElementById("confirmCancelButton")

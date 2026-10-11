@@ -49,6 +49,7 @@ header {
     padding: var(--big-gap);
     background-color: var(--card-background);
     border-bottom: 1px solid var(--card-border);
+    /* border-radius:var(--soft-rounded-corner) */
 }
 h1{
     font-size: 1.25rem;
@@ -294,8 +295,8 @@ margin-top: var(--big-gap);
     width: max-content;
     max-width: calc(100% - 32px);
     padding: 10px 20px 10px 10px;
-    background-color: white;
-    border: 1px solid #ddd;
+    background-color: var(--card-background);
+    border:  1px solid var(--card-border);
     border-radius: 999px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     transition:
@@ -318,7 +319,7 @@ margin-top: var(--big-gap);
     height: 32px;
     font-weight: 500;
     color: white;
-    background-color: green;
+    background-color: var(--brand-green);
     border-radius: 50%;
 }
 .toast-title {
@@ -329,7 +330,7 @@ margin-top: var(--big-gap);
 .toast-text {
     margin: 0;
     font-size: 0.8125rem;
-    color: grey;
+  color: var(--muted-text);
 }
 
 /* 4. CSS: the month row and its pill */
@@ -563,4 +564,13 @@ nav[hidden] {
     background: none;
     border: 0;
     cursor: pointer;
+}
+
+.person-name,
+.bill-title,
+#hostelName,
+#recipientChoices .choice span,
+#paymentWho,
+#cancelBillName {
+    text-transform: capitalize;
 }

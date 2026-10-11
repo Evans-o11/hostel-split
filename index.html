@@ -68,7 +68,7 @@
         <h2>Bills</h2>
        <div class="bills-view" id="billsFormView">
         <button type="button" id="backButton" class="back-button">Back</button>
-         <form id="billForm">
+         <form id="billForm" novalidate>
           <div class="field">
             <label for="billTitle">Bill title</label>
             <input
@@ -141,8 +141,21 @@
          <button type="button" id="historyBackButton" class="back-button">Back</button>
            <div class="field">
     <label for="historyMonth">Month</label>
-    <select id="historyMonth"></select>
+    <div class="select-row">
+      <select id="historyMonth"></select>
+      <button type="button" id="searchToggle" class="icon-button" aria-label="Search bills">
+           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <circle cx="11" cy="11" r="7"></circle>
+      <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
+    </svg>
+      </button>
+    </div>
   </div>
+<div id="searchPanel" class="search-panel">
+<div class="field">
+<input type="search" id="historySearch" placeholder="Search bills by title" />
+</div>
+</div>
   <div class="chip-row" id="historyFilters">
 <button type="button" class="chip chip-active" data-filter="all">All</button>
   <button type="button" class="chip" data-filter="open">Open</button>

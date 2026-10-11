@@ -616,3 +616,64 @@ nav[hidden] {
     background-color: var(--brand-green);
     border-color: var(--brand-green);
 }
+
+.select-row {
+    display: flex;
+    align-items: center;
+    gap: var(--tiny-gap);
+    margin-bottom: var(--big-gap);
+}
+
+.select-row select {
+    width: 100%;
+    padding: 12px 14px;
+    font: inherit;
+    color: var(--main-text);
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    border-radius: var(--soft-rounded-corner);
+    cursor: pointer;
+}
+
+.icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    border-radius: var(--soft-rounded-corner);
+    cursor: pointer;
+    color: var(--brand-green);
+    flex: none;
+}
+
+.icon-button-active {
+    color: white;
+    background-color: var(--brand-green);
+    border-color: var(--brand-green);
+}
+
+.search-panel {
+    
+    background: var(--card-background);
+    border: 0 solid var(--card-border);
+    border-radius: var(--soft-rounded-corner);
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    padding: 0 14px;
+    transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease, margin 0.3s ease, border-width 0.3s ease;
+}
+
+.search-panel.open {
+    max-height: 120px;
+    opacity: 1;
+    padding: 14px;
+    border-width: 1px;
+    margin-bottom: var(--big-gap); /* The margin gives a gap above the chips only while it’s open. */
+}
+.search-panel .field {
+    margin-bottom: 0;
+}

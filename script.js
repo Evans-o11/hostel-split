@@ -74,6 +74,11 @@ billForm.addEventListener("submit", function (event) {
     formMessage.textContent = "Enter a whole amount in naira.";
     return;
   }
+  if (billDue === "") {
+    formMessage.textContent = "Please choose a date.";
+    return;
+  }
+
   if (billDue < todayString()) {
     formMessage.textContent =
       "The due date can't be in the past. If the bill is late, say so in the note.";
@@ -553,8 +558,12 @@ function statCard(label, value) {
 }
 
 let historyFilter = "all";
+let historySearch = "";
 function matchesFilter(bill) {
-    return historyFilter === "all" || billStatus(bill) === historyFilter;
+    const statusOk =
+      historyFilter === "all" || billStatus(bill) === historyFilter;
+    const textOk = bill.title.toLowerCase().includes(historySearch);
+    return statusOk && textOk;
 }
 
 
@@ -590,7 +599,7 @@ function renderHistory() {
   if (shown.length === 0) {
     const none = document.createElement("p");
     none.className = "bill-note";
-   none.textContent = bills.length === 0 ? "No bills yet." : "No bills match this filter.";
+   none.textContent = bills.length === 0 ? "No bills yet." : "No bills match your search or filter.";
     box.appendChild(none);
     return;
   }
@@ -615,7 +624,7 @@ function renderHistory() {
 
     let billed = 0;
     let collected = 0;
-    group.bills.forEach(function (bill) {
+    visible.forEach(function (bill) {
       if (bill.status === "canceled") {
         return;
       }
@@ -829,8 +838,32 @@ document.querySelectorAll("#historyFilters .chip").forEach(function (chip) {
       other.classList.toggle("chip-active", other === chip);
     });
     renderHistory();
+    
   });
 });
+document
+  .getElementById("historySearch")
+  .addEventListener("input", function (event) {
+    historySearch = event.target.value.trim().toLowerCase();
+     renderHistory();
+  });
+
+
+  const searchToggle = document.getElementById("searchToggle");
+  searchToggle.addEventListener("click", function () {
+    const panel = document.getElementById("searchPanel");
+    const box = document.getElementById("historySearch");
+    const isOpen = panel.classList.toggle("open");
+    searchToggle.classList.toggle("icon-button-active", isOpen);
+    if (isOpen) {
+      box.focus();
+    } else {
+      box.value = "";
+      historySearch = "";
+      renderHistory();
+    }
+  });
+
 
 function showToast(title, text) {
   document.getElementById("toastTitle").textContent = title;

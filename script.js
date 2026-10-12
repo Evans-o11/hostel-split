@@ -796,6 +796,200 @@ card.appendChild(actions);
   });
 }
 
+function makeEl(tag, text, className) {
+  const el = document.createElement(tag);
+  if (text !== undefined) {
+    el.textContent = text;
+  }
+  if (className) {
+    el.className = className;
+  }
+  return el;
+}
+
+function niceDate(iso) {
+  if (!iso) {
+    return "—";
+  }
+  return new Date(iso).toLocaleString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function makeTable(headings, rows) {
+  const table = makeEl("table");
+  const head = makeEl("tr");
+  headings.forEach(function (heading) {
+    head.appendChild(makeEl("th", heading));
+  });
+  table.appendChild(head);
+  rows.forEach(function (cells) {
+    const row = makeEl("tr");
+    cells.forEach(function (cell) {
+      row.appendChild(makeEl("td", cell));
+    });
+    table.appendChild(row);
+  });
+  return table;
+}
+
+
+
+
+
+
+function buildReport() {
+   const box = document.getElementById("printReport");
+    box.innerHTML = "";
+    const stateLabels = { paid: "Paid", part: "Part-paid", overdue: "Overdue", unpaid: "Unpaid" };
+
+   box.appendChild(makeEl("h2", "Hostel Split backup"));
+    box.appendChild(makeEl("p", "Hostel: " + settings.hostelName + " · Head: " + settings.headName));
+    box.appendChild(makeEl("p", "Saved on " + new Date().toLocaleString("en-GB")));
+
+let billed = 0;
+    let collected = 0;
+    bills.forEach(function (bill) {
+        if (bill.status === "canceled") {
+          return;
+        }
+        billed += bill.amount;
+        collected += totalPaid(bill);
+    });
+    box.appendChild(makeEl("p",
+        bills.length + (bills.length === 1 ? " bill" : " bills") +
+        " · Billed " + formatNaira(billed) +
+        " · Collected " + formatNaira(collected) +
+        " · Outstanding " + formatNaira(billed - collected)
+    ));
+
+  
+  box.appendChild(makeEl("h3", "Roommates (" + roommates.length + ")"));
+  box.appendChild(
+    makeTable(
+      ["Name", "WhatsApp", "Status", "Added"],
+      roommates.map(function (roommate) {
+        return [
+          roommate.name,
+          roommate.phone ? "+" + roommate.phone : "—",
+          roommate.status === "joined" ? "Joined" : "Invited",
+          niceDate(roommate.createdAt),
+        ];
+      }),
+    ),
+  );
+
+   box.appendChild(makeEl("h3", "Bills"));
+    billsByMonth().forEach(function (group) {
+      box.appendChild(makeEl("h3", monthLabel(group.key)));
+      group.bills.forEach(function (bill) {
+        const block = makeEl("div", undefined, "report-block");
+        block.appendChild(
+          makeEl("h4", bill.title + " · " + formatNaira(bill.amount)),
+        );
+        block.appendChild(
+          makeEl(
+            "p",
+            "Status: " +
+              billStatus(bill).toUpperCase() +
+              " · Due " +
+              bill.dueDate +
+              " · Added " +
+              niceDate(bill.createdAt),
+          ),
+        );
+
+        if (bill.note) {
+          block.appendChild(makeEl("p", "Note: " + bill.note));
+        }
+        if (bill.status === "canceled") {
+          block.appendChild(
+            makeEl(
+              "p",
+              "Canceled on " +
+                niceDate(bill.cancelledAt) +
+                " · Reason: " +
+                bill.cancelReason,
+            ),
+          );
+        } else {
+          const shares = bill.shares || [];
+          const payments = bill.payments || [];
+          const paidCount = shares.filter(function (share) {
+            return shareState(bill, share) === "paid";
+          }).length;
+          block.appendChild(
+            makeEl(
+              "p",
+              "Collected " +
+                formatNaira(totalPaid(bill)) +
+                " of " +
+                formatNaira(bill.amount) +
+                " · " +
+                paidCount +
+                " of " +
+                shares.length +
+                " paid",
+            ),
+          );
+          block.appendChild(
+            makeTable(
+              ["Roommate", "Share", "Paid", "Status"],
+              shares.map(function (share) {
+                return [
+                  share.name,
+                  formatNaira(share.amount),
+                  formatNaira(paidBy(bill, share.roommateId)),
+                  stateLabels[shareState(bill, share)],
+                ];
+              }),
+            ),
+          );
+          if (payments.length === 0) {
+            block.appendChild(makeEl("p", "No payments yet."));
+          } else {
+            block.appendChild(makeEl("p", "Payments received"));
+            block.appendChild(
+              makeTable(
+                ["Date", "Roommate", "Amount"],
+                payments.map(function (payment) {
+                  const share = shares.find(function (item) {
+                    return item.roommateId === payment.roommateId;
+                  });
+                  return [
+                    niceDate(payment.paidAt),
+                    share ? share.name : "Unknown",
+                    formatNaira(payment.amount),
+                  ];
+                }),
+              ),
+            );
+          }
+        }
+
+        box.appendChild(block);
+      });
+    });
+
+}
+
+
+
+
+
+
+
+
+// 5. JS: the
+
+
+
+
+
 function showBillsView(name) {
   const views = document.querySelectorAll(".bills-view");
   views.forEach(function (view) {
@@ -863,6 +1057,11 @@ document
       renderHistory();
     }
   });
+
+  document.getElementById("backupButton").addEventListener("click", function () {
+    buildReport();
+    window.print();
+});
 
 
 function showToast(title, text) {

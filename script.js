@@ -1143,9 +1143,9 @@ roommateForm.addEventListener("submit", function (event) {
     return;
   }
   const phone = cleanPhone(document.getElementById("roommatePhone").value);
-  if (phone.length < 10 || phone.length > 15) {
-    message.textContent = "Enter a valid WhatsApp number.";
-    return
+  if (phone.length !== 13 || !phone.startsWith("234")) {
+    message.textContent = "Enter an 11-digit Nigerian number, like 08012345678.";
+    return;
   } 
   const phoneUsed = roommates.some(function (roommate) {
     return roommate.phone === phone;

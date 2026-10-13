@@ -687,7 +687,8 @@ function renderBills() {
   const billList = document.getElementById("billList");
   billList.innerHTML = "";
 const current = bills.filter(function (bill) {
-  return monthKey(bill) === todayString().slice(0, 7);
+  return monthKey(bill) === todayString().slice(0, 7) && bill.status !== "canceled" ;
+
 });
   if (current.length === 0) {
     const none = document.createElement("p");

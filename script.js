@@ -1412,6 +1412,7 @@ function applySettings() {
   const nav = document.querySelector("nav");
   const button = document.getElementById("setupButton");
   document.getElementById("editHostelButton").hidden = !settings;
+  document.getElementById("deleteHostelButton").hidden = !settings;
   if (!settings) {
     nav.hidden = true;
     button.textContent = "Start";
@@ -1457,3 +1458,48 @@ document
     showScreen("Welcome");
   }); 
 applySettings();
+
+
+let backupDone = false
+
+function openDeleteDialog() {
+    backupDone = false;
+    document.getElementById("deleteSavedBox").checked = false;
+    document.getElementById("deleteSavedBox").disabled = true;
+    document.getElementById("deleteConfirmName").value = "";
+    document.getElementById("deleteBackupNote").textContent = "Step 1: download your backup first.";
+    updateDeleteButton();
+    document.getElementById("deleteDialog").showModal();
+}
+
+function updateDeleteButton() {
+    const saved = document.getElementById("deleteSavedBox").checked;
+    const typed = document.getElementById("deleteConfirmName").value.trim().toLowerCase();
+    const right = typed === settings.hostelName.toLowerCase();
+    document.getElementById("deleteConfirmButton").disabled = !(backupDone && saved && right);
+}
+
+document.getElementById("deleteHostelButton").addEventListener("click", openDeleteDialog);
+
+document.getElementById("deleteCancelButton").addEventListener("click", function () {
+    document.getElementById("deleteDialog").close();
+});
+
+document.getElementById("deleteBackupButton").addEventListener("click", function () {
+    buildReport();
+    window.print();
+    backupDone = true;
+    document.getElementById("deleteSavedBox").disabled = false;
+    document.getElementById("deleteBackupNote").textContent = "Backup opened. Save it as a PDF, then tick the box below.";
+    updateDeleteButton();
+});
+
+document.getElementById("deleteSavedBox").addEventListener("change", updateDeleteButton);
+document.getElementById("deleteConfirmName").addEventListener("input", updateDeleteButton);
+
+document.getElementById("deleteConfirmButton").addEventListener("click", function () {
+    localStorage.removeItem("hostelBills");
+    localStorage.removeItem("hostelRoommates");
+    localStorage.removeItem("hostelSettings");
+    location.reload();
+});

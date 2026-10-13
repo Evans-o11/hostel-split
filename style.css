@@ -697,3 +697,8 @@ nav[hidden] {
 
 @page { margin: 0; }
 
+.delete-link { color: #b3261e;
+margin-top: var(--big-gap); }
+.danger-button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+#deleteBackupButton { margin-top: var(--big-gap); }

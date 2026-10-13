@@ -40,6 +40,7 @@
           <p id="setupMessage" class="form-message"></p>
           <button type="submit" id="setupButton" class="primary-button">Start</button>
         </form>
+        <button type="button" id="deleteHostelButton" class="edit-link delete-link" hidden>Delete this hostel</button>
       </section>
 
       <section id="screenHome" class="screen screen-active">
@@ -259,6 +260,25 @@
   </div>
 
 
+</dialog>
+
+<dialog id="deleteDialog" class="dialog">
+  <h3 class="dialog-title">Delete this Hostel?</h3>
+  <p class="dialog-text">This erases every bill, roommate and payment on this device. It can't be undone.</p>
+  <button type="button" id="deleteBackupButton" class="outline-button">Download backup (PDF)</button>
+  <p id="deleteBackupNote" class="bill-note">Step 1: download your backup first.</p>
+  <label class="choice">
+    <input type="checkbox" id="deleteSavedBox" disabled />
+    <span>I saved my backup</span>
+  </label>
+  <div class="field">
+    <label for="deleteConfirmName">Type the hostel name to confirm</label>
+    <input type="text" id="deleteConfirmName" />
+  </div>
+  <div class="dialog-actions">
+    <button type="button" id="deleteCancelButton" class="secondary-button">Keep hostel</button>
+    <button type="button" id="deleteConfirmButton" class="danger-button" disabled>Delete everything</button>
+  </div>
 </dialog>
 
     <div id="toast" class="toast">

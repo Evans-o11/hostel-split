@@ -1155,6 +1155,20 @@ roommateForm.addEventListener("submit", function (event) {
     message.textContent = "That number is already on the list.";
     return
   }
+  const email = document.getElementById("roommateEmail").value.trim().toLowerCase();
+if (email !== "" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    message.textContent = "Enter a valid email, like name@example.com.";
+    return;
+  }
+  const emailUsed = email !== "" && roommates.some(function (roommate) {
+    return roommate.email === email;
+});
+if (emailUsed) {
+    message.textContent = "That email is already on the list.";
+    return;
+}
+  
+
 
 
 
@@ -1163,6 +1177,7 @@ roommateForm.addEventListener("submit", function (event) {
     id: Date.now(),
     name: name,
     phone: phone,
+    email: email,
     status:"invited",
     createdAt: new Date().toISOString(),
 
@@ -1311,6 +1326,16 @@ function renderRoommates() {
       phoneText.className = "person-meta";
       phoneText.textContent = "+" + roommate.phone;
       left.appendChild(phoneText);
+
+
+if (roommate.email) {
+    const emailText = document.createElement("p");
+    emailText.className = "person-meta";
+    emailText.textContent = roommate.email;
+    left.appendChild(emailText);
+}
+
+      
       if (!isJoined) {
         const inviteText =
           "Hi " +

@@ -100,8 +100,6 @@ formMessage.textContent = "";
 
 
 
-
-
   const newBill = {
     id: Date.now(),
     title: billTitle,

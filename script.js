@@ -19,11 +19,10 @@ function showScreen(name) {
   });
 }
 // . top of the file: read what was saved, or start empty
-const saved = localStorage.getItem("hostelBills");
-let bills = saved ? JSON.parse(saved) : [];
+let bills = store.loadBills();
 
 function saveBills() {
-  localStorage.setItem("hostelBills", JSON.stringify(bills));
+  store.saveBills(bills);
   updateHomeStats();
   renderHome();
   renderOverdue();
@@ -846,7 +845,7 @@ function buildReport() {
     box.innerHTML = "";
     const stateLabels = { paid: "Paid", part: "Part-paid", overdue: "Overdue", unpaid: "Unpaid" };
 
-   box.appendChild(makeEl("h2", "Hostel Split backup"));
+   box.appendChild(makeEl("h2", "Duesly backup"));
     box.appendChild(makeEl("p", "Hostel: " + settings.hostelName + " · Head: " + settings.headName));
     box.appendChild(makeEl("p", "Saved on " + new Date().toLocaleString("en-GB")));
 
@@ -1106,11 +1105,10 @@ document
     showToast("Bill canceled", bill.title);
   });
 
-const savedRoommates = localStorage.getItem("hostelRoommates");
-let roommates = savedRoommates ? JSON.parse(savedRoommates) : [];
+let roommates = store.loadRoommates();
 
 function saveRoommates() {
-  localStorage.setItem("hostelRoommates", JSON.stringify(roommates));
+store.saveRoommates(roommates);
 }
 
 function cleanPhone(text) {
@@ -1338,7 +1336,7 @@ if (roommate.email) {
         const inviteText =
           "Hi " +
           roommate.name +
-          ", I've added you to Hostel Split, where I will post our hostel bills and each person's share. I'll send you the join link as soon as it is ready.";
+          ", I've added you to Duesly, where I will post our hostel bills and each person's share. I'll send you the join link as soon as it is ready.";
         const invite = document.createElement("a");
         invite.className = "invite-link";
         invite.textContent = "Invite on WhatsApp";
@@ -1426,11 +1424,10 @@ const share = bill.shares.find(function (item) {
     showToast("Payment recorded", share.name + " paid " + formatNaira(amount));
  });
 
-const savedSettings = localStorage.getItem("hostelSettings");
-let settings = savedSettings ? JSON.parse(savedSettings) : null;
+let settings = store.loadSettings();
 
 function saveSettings() {
-  localStorage.setItem("hostelSettings", JSON.stringify(settings));
+  store.saveSettings(settings);
 }
 function applySettings() {
   const nav = document.querySelector("nav");
@@ -1522,8 +1519,6 @@ document.getElementById("deleteSavedBox").addEventListener("change", updateDelet
 document.getElementById("deleteConfirmName").addEventListener("input", updateDeleteButton);
 
 document.getElementById("deleteConfirmButton").addEventListener("click", function () {
-    localStorage.removeItem("hostelBills");
-    localStorage.removeItem("hostelRoommates");
-    localStorage.removeItem("hostelSettings");
+store.clearAll();
     location.reload();
 });

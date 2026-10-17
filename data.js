@@ -30,7 +30,7 @@ const store = {
   loadSettings: function () {
     return readItem("hostelSettings", null);
   },
-  savesettings: function (settings) {
+  saveSettings: function (settings) {
     writeItem("hostelSettings", settings);
   },
   clearAll: function () {

@@ -2,10 +2,12 @@ require("dotenv").config();
 const express = require("express");
 const { hashPassword, checkPassword } = require("./passwords");
 const jwt = require("jsonwebtoken");
+const cors = require("cors");
 const pool = require("./db");
 
 const app = express();
 app.use(express.json());
+app.use(cors({ origin: ["http://127.0.0.1:5500", "http://localhost:5500"] }));
 const PORT = 3000;
 
 app.get("/health", function (req, res) {

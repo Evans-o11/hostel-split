@@ -296,19 +296,22 @@
 <div id="authScreen" class="auth-screen">
   <div class="auth-card">
     <h1 class="auth-title">Duesly</h1>
-    <p class="entry-sub">Sign in to continue</p>
+   
 
     <form id="signInForm" novalidate>
+       <p class="entry-sub">Sign in to continue</p>
       <label for="signInEmail">Email</label>
       <input id="signInEmail" type="email" autocomplete="email">
       <label for="signInPassword">Password</label>
       <input id="signInPassword" type="password" autocomplete="current-password">
+      <p class="auth-forgot"><button type="button" id="showForgot">Forgot password?</button></p>.
       <p id="signInError" class="auth-error"></p>
       <button type="submit" class="auth-button">Sign in</button>
       <p class="auth-switch">New here? <button type="button" id="showSignUp">Create an account</button></p>
     </form>
 
     <form id="signUpForm" class="auth-hidden" novalidate>
+      <p class="auth-sub">Create your account</p>
       <label for="signUpName">Full name</label>
       <input id="signUpName" type="text" autocomplete="name">
       <label for="signUpEmail">Email</label>
@@ -318,6 +321,16 @@
       <p id="signUpError" class="auth-error"></p>
       <button type="submit" class="auth-button">Create account</button>
       <p class="auth-switch">Have an account? <button type="button" id="showSignIn">Sign in</button></p>
+    </form>
+
+    <form id="forgotForm" class="auth-hidden" novalidate>
+      <p class="auth-sub">Enter your email and we will send you a link to set up  a new password</p>
+      <label for="forgotEmail">Email</label>
+      <input type="email" name="forgotEmail" id="forgotEmail" autocomplete="email">
+      <p id="forgotMessage" class="auth-error"></p>
+      <button type="submit" class="auth-button">Send reset link</button>
+      <p class="auth-switch"><button type="button" id="backToSignIn">Back to sign in</button></p>
+
     </form>
   </div>
 </div>

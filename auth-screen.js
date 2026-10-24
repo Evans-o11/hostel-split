@@ -1,6 +1,7 @@
 const authScreen = document.getElementById("authScreen");
 const signInForm = document.getElementById("signInForm");
 const signUpForm = document.getElementById("signUpForm");
+const forgotForm = document.getElementById("forgotForm");
 
 document.getElementById("showSignUp").addEventListener("click", function () {
     signInForm.classList.add("auth-hidden");
@@ -10,6 +11,17 @@ document.getElementById("showSignIn").addEventListener("click", function () {
      signUpForm.classList.add("auth-hidden");
      signInForm.classList.remove("auth-hidden");
 })
+
+document.getElementById("showForgot").addEventListener("click", function (){
+    signInForm.classList.add("auth-hidden")
+    forgotForm.classList.remove("auth-hidden")
+})
+document.getElementById("backToSignIn").addEventListener("click", function () {
+    forgotForm.classList.add("auth-hidden");
+      signInForm.classList.remove("auth-hidden");
+})
+
+
 signInForm.addEventListener("submit", async function (event) {
     event.preventDefault();
     const email = document.getElementById("signInEmail").value.trim();
@@ -47,4 +59,5 @@ signUpForm.addEventListener("submit", async function (event) {
      } catch (error) {
         errorLine.textContent = error.message 
      }
- })
+})
+ 

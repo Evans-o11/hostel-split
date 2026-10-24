@@ -292,7 +292,39 @@
     <p id="toastText" class="toast-text"></p>
   </div>
 </div>
+
+<div id="authScreen" class="auth-screen">
+  <div class="auth-card">
+    <h1 class="auth-title">Duesly</h1>
+    <p class="entry-sub">Sign in to continue</p>
+
+    <form id="signInForm" novalidate>
+      <label for="signInEmail">Email</label>
+      <input id="signInEmail" type="email" autocomplete="email">
+      <label for="signInPassword">Password</label>
+      <input id="signInPassword" type="password" autocomplete="current-password">
+      <p id="signInError" class="auth-error"></p>
+      <button type="submit" class="auth-button">Sign in</button>
+      <p class="auth-switch">New here? <button type="button" id="showSignUp">Create an account</button></p>
+    </form>
+
+    <form id="signUpForm" class="auth-hidden" novalidate>
+      <label for="signUpName">Full name</label>
+      <input id="signUpName" type="text" autocomplete="name">
+      <label for="signUpEmail">Email</label>
+      <input id="signUpEmail" type="email" autocomplete="email">
+      <label for="signUpPassword">Password</label>
+      <input id="signUpPassword" type="password" autocomplete="new-password">
+      <p id="signUpError" class="auth-error"></p>
+      <button type="submit" class="auth-button">Create account</button>
+      <p class="auth-switch">Have an account? <button type="button" id="showSignIn">Sign in</button></p>
+    </form>
+  </div>
+</div>
+
+
 <script src="auth.js"></script>
+<script src="auth-screen.js"></script>
 <script src="data.js"></script>
         <script src="script.js"></script>
         

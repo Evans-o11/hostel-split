@@ -702,3 +702,35 @@ margin-top: var(--big-gap); }
 .danger-button:disabled { opacity: 0.4; cursor: not-allowed; }
 
 #deleteBackupButton { margin-top: var(--big-gap); }
+
+
+
+.auth-screen{
+    position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: #f4f6f4;
+}
+
+
+.auth-card{
+    width: 100%;
+  max-width: 380px;
+  padding: 24px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+
+
+.auth-card label { display: block; margin: 12px 0 4px; font-weight: 600; }
+.auth-card input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 10px; font-size: 16px; box-sizing: border-box; }
+.auth-error { min-height: 20px; margin: 8px 0; color: #c62828; font-size: 14px; }
+.auth-button { width: 100%; padding: 12px; border: 0; border-radius: 10px; background: var(--brand-green); color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; }
+.auth-switch { margin-top: 16px; text-align: center; font-size: 14px; }
+.auth-switch button { border: 0; background: none; color: var(--brand-green); font-weight: 600; cursor: pointer; }
+.auth-hidden { display: none; }

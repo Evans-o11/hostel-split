@@ -130,6 +130,26 @@ function requireLogin(req, res, next) {
       res.status(500).json({ error: "Something went wrong. Please try again." })
     }
   });
+app.post("/auth/reset-password", async (req, res) => {
+  const { token, password } = req.body;
+  if (!token || !password || password.length < 8) {
+     return res.status(404).json({error:"A valid link and a new password of at least 8 characters are required"})
+  }
+  try {
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+    const claim = await pool.query("UPDATE password_resets SET used_at = NOW() WHERE token_hash = $1 AND used_at IS NULL AND expires_at > NOW() RETURNING user_id", [tokenHash])
+    if (claim.rows.length === 0) {
+      return res.status(400).json({error: "This link has expired or was already used. Please request a new one"})
+    }
+    const passwordHash = await hashPassword(password)
+    await pool.query("UPDATE users SET password_hash = $1 WHERE id = $2", [passwordHash, claim.rows[0].user_id])
+    res.json({ message: "Your password has been changed. You can now sign in." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error:"Something went wrong. Please try again."})
+  }
+})
+
 app.listen(PORT, function () {
   console.log("Duesly server listening on http://localhost:" + PORT);
 

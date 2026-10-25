@@ -4,11 +4,40 @@ const { hashPassword, checkPassword } = require("./passwords");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const pool = require("./db");
+const crypto = require("crypto");
+const { error } = require("console");
 
 const app = express();
 app.use(express.json());
 app.use(cors({ origin: ["http://127.0.0.1:5500", "http://localhost:5500"] }));
 const PORT = 3000;
+const RESET_MINUTES = 5;
+const APP_URL = "http://127.0.0.1:5500/index.html";
+
+
+app.post("/auth/forgot-password", async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+     return res.status(400).json({error: "Please enter your email."})
+  }
+  try {
+    const cleanEmail = email.trim().toLowerCase();
+    const result = await pool.query("SELECT id FROM users WHERE email = $1", [cleanEmail]);
+    if (result.rows.length > 0) {
+      const userId = result.rows[0].id;
+      const token = crypto.randomBytes(32).toString("hex");
+      const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+      await pool.query("UPDATE password_resets SET used_at = NOW() WHERE user_id = $1 AND used_at IS NULL", [userId]);
+      const expiresAt = new Date(Date.now() + RESET_MINUTES * 60 * 1000);
+      await pool.query("INSERT INTO password_resets (user_id, token_hash, expires_at) VALUES ($1, $2, $3)", [userId, tokenHash, expiresAt])
+      console.log("RESET LINK (development only):", APP_URL + "?reset=" + token);
+    }
+    res.json({ message: "If that email is registered, a reset link has been sent."})
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong. Please try again." });
+  }
+})
 
 app.get("/health", function (req, res) {
   res.json({ status: "ok", name: "duesly-server" });

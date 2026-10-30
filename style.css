@@ -736,4 +736,6 @@ margin-top: var(--big-gap); }
 .auth-forgot { margin-top: 8px; text-align: right; font-size: 14px; }
 .auth-forgot button { border: 0; background: none; color: var(--brand-green); font-weight: 700; cursor: pointer; }
 .auth-ok { color: var(--brand-green); }
+.auth-hint { font-size: 0.8rem; color: #777; margin-bottom: 6px; }
 .auth-hidden { display: none; }
+

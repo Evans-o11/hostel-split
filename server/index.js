@@ -1,6 +1,6 @@
 require("dotenv").config();
 const express = require("express");
-const { hashPassword, checkPassword } = require("./passwords");
+const { hashPassword, checkPassword, passwordProblem } = require("./passwords");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const pool = require("./db");
@@ -58,6 +58,10 @@ app.post("/auth/signup", async (req, res) => {
   const { full_name, email, password } = req.body;
   if (!full_name || !email || !password || password.length < 8) {
     return res.status(400).json({ error: "Full name, email and a password of at least 8 characters are required" });
+  }
+  const problem = passwordProblem(password);
+  if (problem) {
+     return res.status(400).json({ error: problem });
   }
  
   try {
@@ -135,6 +139,11 @@ app.post("/auth/reset-password", async (req, res) => {
   if (!token || !password || password.length < 8) {
      return res.status(404).json({error:"A valid link and a new password of at least 8 characters are required"})
   }
+  const problem = passwordProblem(password);
+  if (problem) {
+    return res.status(400).json({ error: problem });
+  }
+
   try {
     const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
     const claim = await pool.query("UPDATE password_resets SET used_at = NOW() WHERE token_hash = $1 AND used_at IS NULL AND expires_at > NOW() RETURNING user_id", [tokenHash])

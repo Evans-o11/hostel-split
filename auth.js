@@ -24,3 +24,11 @@ async function signIn(email, password) {
     localStorage.setItem("duesly_token", data.token);
     return data.user;
 }
+async function requestReset(email) {
+    const data = await callServer("/auth/forgot-password", { email });
+    return data.message;
+}
+async function resetPassword(token, password) {
+    const data = await callServer("/auth/reset-password", { token, password });
+    return data.message;
+}

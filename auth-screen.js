@@ -1,3 +1,5 @@
+
+
 const authScreen = document.getElementById("authScreen");
 const signInForm = document.getElementById("signInForm");
 const signUpForm = document.getElementById("signUpForm");
@@ -61,3 +63,66 @@ signUpForm.addEventListener("submit", async function (event) {
      }
 })
  
+forgotForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
+    const email = document.getElementById("forgotEmail").value.trim();
+    const messageLine = document.getElementById("forgotMessage");
+    messageLine.textContent = "";
+    messageLine.className = "auth-error";
+    if (!email) {
+        messageLine.textContent = "Please enter your email";
+        return;
+    }
+    try {
+        const message = await requestReset(email);
+        messageLine.textContent = message;
+        messageLine.classList.add("auth-ok")
+
+    } catch (error) {
+        messageLine.textContent = error.message
+    }
+})
+
+const resetForm = document.getElementById("resetForm");
+const resetToken = new URLSearchParams(window.location.search).get("reset");
+if (resetToken) {
+    signInForm.classList.add("auth-hidden");
+    resetForm.classList.remove("auth-hidden");
+}
+
+resetForm.addEventListener("submit",  async function (event) {
+    event.preventDefault()
+    const password = document.getElementById("resetPassword").value;
+    const confirm = document.getElementById("resetConfirm").value;
+    const messageLine = document.getElementById("resetMessage");
+    messageLine.textContent = ""
+   messageLine.className = "auth-error";
+    
+    if (password.length < 8) {
+        messageLine.textContent = "Your new password must have at least 8 characters."
+        return;
+    }
+    if (password !== confirm) {
+        messageLine.textContent = "The two passwords do not match." 
+        return
+    }
+    try {
+        const message = await resetPassword(resetToken, password);
+        document.getElementById("resetPassword").value = ""
+        document.getElementById("resetConfirm").value = ""
+        messageLine.textContent = message
+            messageLine.classList.add("auth-ok");
+    } catch (error) {
+        messageLine.textContent = error.message;
+    }
+})
+document.getElementById("resetBackToSignIn").addEventListener("click", function () {
+    window.history.replaceState(null, "", window.location.pathname);
+    resetForm.classList.add("auth-hidden");
+    signInForm.classList.remove("auth-hidden");
+})
+document.getElementById("resetAskNew").addEventListener("click", function () {
+    window.history.replaceState(null, "", window.location.pathname);
+    resetForm.classList.add("auth-hidden");
+    forgotForm.classList.remove("auth-hidden");
+})

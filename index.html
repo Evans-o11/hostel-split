@@ -332,6 +332,18 @@
       <p class="auth-switch"><button type="button" id="backToSignIn">Back to sign in</button></p>
 
     </form>
+
+    <form id="resetForm" class="auth-hidden" novalidate>
+      <p class="auth-sub">Choose a new password for your account.</p>
+      <label for="resetPassword">New password</label>
+      <input type="password" id="resetPassword" autocomplete="new-password">
+      <label for="resetConfirm">Confirm new password</label>
+      <input type="password" id="resetConfirm" autocomplete="new-password">
+      <p id="resetMessage" class="auth-error"></p>
+      <button type="submit" class="auth-button">Change password</button>
+      <p class="auth-switch"><button type="button" id="resetBackToSignIn">Back to sign in</button></p>
+      <p class="auth-switch"><button type="button" id="resetAskNew">Ask for a new link</button></p>
+    </form>
   </div>
 </div>
 

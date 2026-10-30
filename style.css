@@ -735,7 +735,5 @@ margin-top: var(--big-gap); }
 .auth-switch button { border: 0; background: none; color: var(--brand-green); font-weight: 600; cursor: pointer; }
 .auth-forgot { margin-top: 8px; text-align: right; font-size: 14px; }
 .auth-forgot button { border: 0; background: none; color: var(--brand-green); font-weight: 700; cursor: pointer; }
+.auth-ok { color: var(--brand-green); }
 .auth-hidden { display: none; }
-
-
-In style.css, find the .auth-hidden { display: none; } rule near the end. Above it, add two rules: .auth-forgot (margin-top 8px, right-aligned, font-size 14px) and .auth-forgot button (no border, no background, var(--brand-green) colour, bold, pointer cursor). Leave .auth-hidden as the last rule in the file.

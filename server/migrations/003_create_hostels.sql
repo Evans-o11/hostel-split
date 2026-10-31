@@ -1,0 +1,7 @@
+CREATE TABLE hostels (
+    id SERIAL PRIMARY KEY,
+    owner_id INTEGER NOT NULL UNIQUE REFERENCES users(id)  ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    head_name TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

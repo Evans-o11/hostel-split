@@ -14,13 +14,20 @@
   </head>
   <body>
     <header> 
-      <h1>Duesly</h1>
-      <p class="tagline">Your simple solution for splitting hostel bills</p>
+      
 
      
       <div class="hostel-row">
          <p id="hostelName">Your hostel name</p>
         <button type="button" id="editHostelButton" class="edit-link">Edit</button>
+        <div class="menu-wrap">
+          <button type="button" id="menuButton" class="avatar-button" aria-label="Open menu">?</button>
+          <div id="menu-panel" class="menu-panel menu-hidden">
+            <p id="menuName" class="menu-name"></p>
+            <p id="menuEmail" class="menu-email"></p>
+            <button type="button" id="logOutButton" class="menu-item">Log out</button>
+          </div>
+        </div>
         </div>
     </header>
 
@@ -293,7 +300,7 @@
   </div>
 </div>
 
-<div id="authScreen" class="auth-screen">
+<div id="authScreen" class="auth-screen auth-checking">
   <div class="auth-card">
     <h1 class="auth-title">Duesly</h1>
    
@@ -304,7 +311,7 @@
       <input id="signInEmail" type="email" autocomplete="email">
       <label for="signInPassword">Password</label>
       <input id="signInPassword" type="password" autocomplete="current-password">
-      <p class="auth-forgot"><button type="button" id="showForgot">Forgot password?</button></p>.
+      <p class="auth-forgot"><button type="button" id="showForgot">Forgot password?</button></p>
       <p id="signInError" class="auth-error"></p>
       <button type="submit" class="auth-button">Sign in</button>
       <p class="auth-switch">New here? <button type="button" id="showSignUp">Create an account</button></p>

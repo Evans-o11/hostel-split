@@ -88,6 +88,7 @@ const resetToken = new URLSearchParams(window.location.search).get("reset");
 if (resetToken) {
     signInForm.classList.add("auth-hidden");
     resetForm.classList.remove("auth-hidden");
+    authScreen.classList.remove("auth-checking");
 }
 
 resetForm.addEventListener("submit",  async function (event) {
@@ -125,4 +126,27 @@ document.getElementById("resetAskNew").addEventListener("click", function () {
     window.history.replaceState(null, "", window.location.pathname);
     resetForm.classList.add("auth-hidden");
     forgotForm.classList.remove("auth-hidden");
+})
+
+if (!resetToken) {
+    checkSession().then(function (ok) {
+        if (ok) {
+            authScreen.classList.add("auth-hidden");
+        }
+         authScreen.classList.remove("auth-checking");
+    })
+}
+
+document.getElementById("logOutButton").addEventListener("click", function () {
+    signOut();
+    menuPanel.classList.add("menu-hidden");
+    document.getElementById("signInEmail").value = "";
+    document.getElementById("signInPassword").value = ""
+    document.getElementById("signInError").textContent = ""
+    signUpForm.classList.add("auth-hidden");
+    forgotForm.classList.add("auth-hidden");
+    resetForm.classList.add("auth-hidden");
+    signInForm.classList.remove("auth-hidden");
+    authScreen.classList.remove("auth-hidden");
+
 })

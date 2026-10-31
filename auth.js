@@ -24,6 +24,32 @@ async function signIn(email, password) {
     localStorage.setItem("duesly_token", data.token);
     return data.user;
 }
+
+async function checkSession() {
+    const token = localStorage.getItem("duesly_token")
+    if (!token) {
+        return false
+    }
+    try {
+        const response = await fetch(API_URL + "/auth/me", {
+           headers: {Authorization:"Bearer " + token }
+        })
+        if (response.ok) {
+            return true;
+        }
+        localStorage.removeItem("duesly_token")
+        return false;
+    } catch (error) {
+        return false
+    }
+    
+}
+
+function signOut() {
+    localStorage.removeItem("duesly_token");
+}
+
+
 async function requestReset(email) {
     const data = await callServer("/auth/forgot-password", { email });
     return data.message;

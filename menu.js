@@ -15,3 +15,14 @@ document.addEventListener("keydown", function (event) {
         menuPanel.classList.add("menu-hidden");
     }
 })
+
+function showUser(user) {
+    const parts = user.full_name.trim().split(" ");
+    let letters = parts[0][0];
+    if (parts.length > 1) {
+        letters = letters + parts[parts.length - 1][0];
+    }
+    document.getElementById("menuButton").textContent = letters.toUpperCase();
+    document.getElementById("menuName").textContent = user.full_name
+    document.getElementById("menuEmail").textContent = user.email;
+}

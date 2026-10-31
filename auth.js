@@ -21,6 +21,7 @@ async function signUp(full_name, email, password) {
 }
 async function signIn(email, password) {
     const data = await callServer("/auth/signin", { email, password });
+   
     localStorage.setItem("duesly_token", data.token);
     return data.user;
 }

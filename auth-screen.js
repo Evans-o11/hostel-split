@@ -35,7 +35,8 @@ signInForm.addEventListener("submit", async function (event) {
         return;
     }
     try {
-        await signIn(email, password);
+        const user = await signIn(email, password);
+showUser(user);
         document.getElementById("signInPassword").value = ""
         authScreen.classList.add("auth-hidden");
     } catch (error) {
@@ -55,7 +56,8 @@ signUpForm.addEventListener("submit", async function (event) {
          return;
      }
      try {
-         await signUp(fullName, email, password);
+         const user = await signUp(fullName, email, password);
+         showUser(user);
          document.getElementById("signUpPassword").value = ""
           authScreen.classList.add("auth-hidden");
      } catch (error) {

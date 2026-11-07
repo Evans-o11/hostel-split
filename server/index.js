@@ -126,12 +126,12 @@ function requireLogin(req, res, next) {
     try {
       const result = await pool.query("SELECT id, full_name, email, role FROM users WHERE id = $1", [req.user.id])
       if (result.rows.length === 0) {
-        res.status(404).json({ error: "User not found" })
+        return res.status(404).json({ error: "User not found" })
       }
       res.json(result.rows[0]);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Something went wrong. Please try again." })
+      return res.status(500).json({ error: "Something went wrong. Please try again." })
     }
   });
 app.post("/auth/reset-password", async (req, res) => {
@@ -156,6 +156,40 @@ app.post("/auth/reset-password", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error:"Something went wrong. Please try again."})
+  }
+})
+
+app.get("/hostel", requireLogin, async (req, res) => { 
+  try {
+    const result = await pool.query("SELECT id, name, head_name FROM hostels WHERE owner_id = $1", [req.user.id]);
+    if (result.rows.length === 0) {
+      return res.json({ hostel: null });
+    }
+    res.json({ hostel: result.rows[0] });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong. Please try again." });
+  }
+});
+
+app.post("/hostel", requireLogin, async (req, res) => {
+  const { name, head_name } = req.body;
+  if (!name || !name.trim() || !head_name || !head_name.trim()) {
+    return res.status(400).json({ error: "Please enter the hostel name and your name." });
+  }
+  if (name.trim().length > 80 || head_name.trim().length > 80) {
+    return res.status(400).json({ error: "Names must be 80 characters or less." })
+  }
+  try {
+    const result = await pool.query("INSERT INTO hostels (owner_id, name, head_name) VALUES ($1, $2, $3) RETURNING id, name, head_name", [req.user.id, name.trim(), head_name.trim()])
+    res.status(201).json({hostel: result.rows[0]})
+  } 
+  catch (error) {
+    if (error.code === "23505") {
+      return res.status(409).json({ error: "You already have a hostel." });
+    }
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong. Please try again." });
   }
 })
 

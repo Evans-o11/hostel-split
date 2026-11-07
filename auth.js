@@ -36,7 +36,8 @@ async function checkSession() {
            headers: {Authorization:"Bearer " + token }
         })
         if (response.ok) {
-            return true;
+            const data = await response.json();
+            return data.user || data;
         }
         localStorage.removeItem("duesly_token")
         return false;

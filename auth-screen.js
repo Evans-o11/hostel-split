@@ -133,8 +133,9 @@ document.getElementById("resetAskNew").addEventListener("click", function () {
 })
 
 if (!resetToken) {
-    checkSession().then(function (ok) {
-        if (ok) {
+    checkSession().then(function (user) {
+        if (user) {
+            showUser(user);
             authScreen.classList.add("auth-hidden");
         }
          authScreen.classList.remove("auth-checking");

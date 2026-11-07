@@ -39,6 +39,7 @@ signInForm.addEventListener("submit", async function (event) {
 showUser(user);
         document.getElementById("signInPassword").value = ""
         authScreen.classList.add("auth-hidden");
+        loadHostel();
     } catch (error) {
         erroLine.textContent = error.message;
     }
@@ -59,7 +60,8 @@ signUpForm.addEventListener("submit", async function (event) {
          const user = await signUp(fullName, email, password);
          showUser(user);
          document.getElementById("signUpPassword").value = ""
-          authScreen.classList.add("auth-hidden");
+         authScreen.classList.add("auth-hidden");
+         loadHostel();
      } catch (error) {
         errorLine.textContent = error.message 
      }

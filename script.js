@@ -1445,6 +1445,22 @@ function applySettings() {
   document.getElementById("hostelName").textContent = settings.hostelName;
 }
 
+
+async function loadHostel() {
+  const hostel = await getHostel()
+  if (hostel) {
+    settings = { hostelName: hostel.name, headName: hostel.head_name,};
+  } else {
+    settings = null;
+  }
+  applySettings()
+  if (settings) {
+    showScreen("Home");
+  }
+}
+
+
+
 const setupForm = document.getElementById("setupForm");
 setupForm.addEventListener("submit", function (event) {
   event.preventDefault();
@@ -1478,8 +1494,7 @@ document
     document.getElementById("setupHead").value = settings.headName;
     showScreen("Welcome");
   }); 
-applySettings();
-
+loadHostel();
 
 let backupDone = false
 

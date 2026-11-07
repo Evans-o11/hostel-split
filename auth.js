@@ -46,6 +46,33 @@ async function checkSession() {
     
 }
 
+async function getHostel() {
+    const token = localStorage.getItem("duesly_token");
+    const answer = await fetch(API_URL + "/hostel", {
+      headers: { Authorization: "Bearer " + token },
+    });
+
+    const data = await answer.json()
+return data.hostel;
+}
+
+async function saveHostel(hostelName, headName) {
+    const token = localStorage.getItem("duesly_token");
+    const answer = await fetch(API_URL + "/hostel", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify({ name: hostelName, head_name: headName }),
+    });
+    const data = await answer.json();
+    if (!answer.ok) {
+        throw new Error(data.error);
+    }
+    return data.hostel;
+}
+
 function signOut() {
     localStorage.removeItem("duesly_token");
 }

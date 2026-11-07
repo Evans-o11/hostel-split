@@ -1436,6 +1436,7 @@ function applySettings() {
   document.getElementById("deleteHostelButton").hidden = !settings;
   if (!settings) {
     nav.hidden = true;
+    document.getElementById("hostelName").textContent = "";
     button.textContent = "Start";
     showScreen("Welcome");
     return;

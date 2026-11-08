@@ -249,6 +249,21 @@ app.delete("/hostel", requireLogin, async (req, res) => {
 })
 
 
+app.post("/hostel/restore", requireLogin, async (req, res) => {
+  try {
+    const result = await pool.query("UPDATE hostels SET deleted_at = NULL WHERE owner_id = $1 AND deleted_at IS NOT NULL AND deleted_at + make_interval(days => $2) > NOW() RETURNING id, name, head_name", [req.user.id, RECOVERY_DAYS])
+    
+    if(result.rows.length === 0){
+      return res.status(404).json({error: "There is no hostel to recover or the recovery period has expired."})
+    }
+    res.json({hostel: result.rows[0]})
+  } catch (error) {
+    console.error(error)
+     res.status(500).json({ error: "Something went wrong. Please try again." });
+  }
+})
+
+
 app.listen(PORT, function () {
   console.log("Duesly server listening on http://localhost:" + PORT);
 

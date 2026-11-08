@@ -1463,7 +1463,7 @@ async function loadHostel() {
 
 
 const setupForm = document.getElementById("setupForm");
-setupForm.addEventListener("submit", function (event) {
+setupForm.addEventListener("submit", async function (event) {
   event.preventDefault();
   const hostelName = document.getElementById("setupHostel").value.trim();
   const headName = document.getElementById("setupHead").value.trim();
@@ -1478,6 +1478,15 @@ setupForm.addEventListener("submit", function (event) {
     return;
   }
   message.textContent = "";
+  if (!settings) {
+    try {
+      await saveHostel(hostelName, headName);
+    } catch (error) {
+      message.textContent = error.message;
+      return
+    }
+  }
+    
   settings = {
     hostelName: hostelName,
     headName: headName,

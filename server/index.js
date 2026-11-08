@@ -6,12 +6,14 @@ const cors = require("cors");
 const pool = require("./db");
 const crypto = require("crypto");
 const { error } = require("console");
+const { json } = require("stream/consumers");
 
 const app = express();
 app.use(express.json());
 app.use(cors({ origin: ["http://127.0.0.1:5500", "http://localhost:5500"] }));
 const PORT = 3000;
 const RESET_MINUTES = 5;
+const RECOVERY_DAYS = 30
 const APP_URL = "http://127.0.0.1:5500/index.html";
 
 
@@ -161,11 +163,30 @@ app.post("/auth/reset-password", async (req, res) => {
 
 app.get("/hostel", requireLogin, async (req, res) => { 
   try {
-    const result = await pool.query("SELECT id, name, head_name FROM hostels WHERE owner_id = $1", [req.user.id]);
+    const result = await pool.query("SELECT id, name, head_name, deleted_at, deleted_at + make_interval(days => $2) AS erase_on FROM hostels WHERE owner_id = $1", [req.user.id, RECOVERY_DAYS]);
     if (result.rows.length === 0) {
       return res.json({ hostel: null });
     }
-    res.json({ hostel: result.rows[0] });
+    const row = result.rows[0];
+    if (row.deleted_at === null) {
+      return res.json({
+        hostel: {
+          id: row.id,
+          name: row.name,
+          head_name: row.head_name,
+        }
+      })
+    }
+
+    if (new Date(row.erase_on) > new Date()) {
+      return res.json({
+        hostel: null, deleted_hostel: {
+          name: row.name,
+          erase_on: row.erase_on
+  }})
+}
+
+    res.json({ hostel: null });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Something went wrong. Please try again." });
@@ -212,6 +233,21 @@ app.put("/hostel", requireLogin, async (req, res) => {
     res.status(500).json({ error: "Something went wrong. Please try again." });
   }
 })
+
+
+app.delete("/hostel", requireLogin, async (req, res) => {
+  try {
+    const result = await pool.query("UPDATE hostels SET deleted_at = NOW() WHERE owner_id = $1 AND deleted_at IS NULL RETURNING id", [req.user.id])
+    if (result.rows.length === 0) {
+      return res.status(404).json({error: "You don't have a hostel to delete"})
+    }
+    res.json({message: "Your hostel is deleted. You can recover it for " + RECOVERY_DAYS + " days by signing in."})
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({error: "Something went wrong. Please try again."})
+  }
+})
+
 
 app.listen(PORT, function () {
   console.log("Duesly server listening on http://localhost:" + PORT);

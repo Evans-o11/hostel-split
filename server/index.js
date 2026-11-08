@@ -193,6 +193,26 @@ app.post("/hostel", requireLogin, async (req, res) => {
   }
 })
 
+app.put("/hostel", requireLogin, async (req, res) => {
+  const { name, head_name } = req.body;
+  if (!name || !name.trim() || !head_name || !head_name.trim()) {
+    return res.status(400).json({ error: "Please enter the hostel name and your name." });
+  }
+  if (name.trim().length > 80 || head_name.trim().length > 80) {
+    return res.status(400).json({ error: "Names must be 80 characters or less." });
+  }
+  try {
+    const result = await pool.query("UPDATE hostels SET name = $1, head_name = $2 WHERE owner_id = $3 RETURNING id, name, head_name", [name.trim(), head_name.trim(), req.user.id])
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "You don't have a hostel yet." });
+    }
+    res.json({ hostel: result.rows[0] });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong. Please try again." });
+  }
+})
+
 app.listen(PORT, function () {
   console.log("Duesly server listening on http://localhost:" + PORT);
 

@@ -1550,7 +1550,14 @@ document.getElementById("deleteBackupButton").addEventListener("click", function
 document.getElementById("deleteSavedBox").addEventListener("change", updateDeleteButton);
 document.getElementById("deleteConfirmName").addEventListener("input", updateDeleteButton);
 
-document.getElementById("deleteConfirmButton").addEventListener("click", function () {
-store.clearAll();
-    location.reload();
+document.getElementById("deleteConfirmButton").addEventListener("click",  async function () {
+  try {
+    await deleteHostel();
+  } catch (error) {
+    document.getElementById("deleteBackupNote").textContent = error.message;
+    return;
+  }
+      location.reload();
 });
+
+

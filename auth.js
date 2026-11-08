@@ -88,6 +88,34 @@ async function updateHostel(hostelName, headName) {
     return data.hostel;
 }
 
+
+async function deleteHostel() {
+    const token = localStorage.getItem("duesly_token");
+    const answer = await fetch(API_URL + "/hostel", {
+        method: "DELETE",
+        headers: { Authorization: "Bearer " + token },
+    })
+    const data = await answer.json();
+    if (!answer.ok) {
+        throw new Error(data.error); 
+    }
+      return data.message;
+}
+
+async function restoreHostel() {
+    const token = localStorage.getItem("duesly_token");
+    const answer = await fetch(API_URL + "/hostel/restore", {
+      method: "POST",
+      headers: { Authorization: "Bearer " + token },
+    });
+    const data = await answer.json();
+    if (!answer.ok) {
+      throw new Error(data.error);
+    }
+    return data.hostel;
+}
+
+
 function signOut() {
     localStorage.removeItem("duesly_token");
 }

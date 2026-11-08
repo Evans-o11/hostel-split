@@ -74,6 +74,20 @@ async function saveHostel(hostelName, headName) {
     return data.hostel;
 }
 
+async function updateHostel(hostelName, headName) {
+    const token = localStorage.getItem("duesly_token");
+    const answer = await fetch(API_URL + "/hostel", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+        body: JSON.stringify({ name: hostelName, head_name: headName }),
+    });
+    const data = await answer.json();
+    if (!answer.ok) {
+        throw new Error(data.error);
+    }
+    return data.hostel;
+}
+
 function signOut() {
     localStorage.removeItem("duesly_token");
 }

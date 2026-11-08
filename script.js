@@ -1485,6 +1485,13 @@ setupForm.addEventListener("submit", async function (event) {
       message.textContent = error.message;
       return
     }
+  } else {
+    try {
+      await updateHostel(hostelName, headName);
+    } catch (error) {
+      message.textContent = error.message;
+      return;
+    }
   }
     
   settings = {

@@ -1,0 +1,1 @@
+ALTER TABLE hostels ADD COLUMN deleted_at TIMESTAMPTZ

@@ -1465,7 +1465,20 @@ async function loadHostel() {
     })
     showScreen("Recover")
 }
+}
+  
+
+document.getElementById("recoverButton").addEventListener("click", async function () {
+  const message = document.getElementById("recoverMessage");
+  message.textContent = "";
+  try {
+    const hostel = await restoreHostel();
+    await loadHostel();
+    showToast("Hostel recovered", hostel.name);
+  } catch (error) {
+    message.textContent = error.message;
   }
+})
 
 
 

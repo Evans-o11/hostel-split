@@ -1448,7 +1448,9 @@ function applySettings() {
 
 
 async function loadHostel() {
-  const hostel = await getHostel()
+  // const hostel = await getHostel()
+  const answer = await getHostel();
+  const hostel = answer.hostel;
   if (hostel) {
     settings = { hostelName: hostel.name, headName: hostel.head_name,};
   } else {
@@ -1457,8 +1459,13 @@ async function loadHostel() {
   applySettings()
   if (settings) {
     showScreen("Home");
-  }
+  } else if (answer.deleted_hostel) {
+    document.getElementById("recoverName").textContent = answer.deleted_hostel.name;
+    document.getElementById("recoverDate").textContent = new Date(answer.deleted_hostel.erase_on).toLocaleString("en-GB", {day: "numeric", month: "long", year: "numeric"
+    })
+    showScreen("Recover")
 }
+  }
 
 
 
@@ -1559,5 +1566,3 @@ document.getElementById("deleteConfirmButton").addEventListener("click",  async 
   }
       location.reload();
 });
-
-

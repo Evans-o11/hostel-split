@@ -54,7 +54,7 @@ async function getHostel() {
     });
 
     const data = await answer.json()
-return data.hostel;
+return data;
 }
 
 async function saveHostel(hostelName, headName) {
